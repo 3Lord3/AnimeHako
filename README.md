@@ -36,11 +36,10 @@
 **Фронтенд:**
 - React
 - Shadcn UI
-- Zustand
 - TanStack Query
 
 **Мобильное приложение:**
-- Flutter
+- React Native
 
 ### Схема работы
 
