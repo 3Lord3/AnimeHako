@@ -3,6 +3,7 @@ import { useUserAnimeList, useUpdateListEntry, useRemoveFromList } from '@/hooks
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { getImageUrl } from '@/lib/imageUrl';
 
 export function UserAnimeListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -66,7 +67,7 @@ export function UserAnimeListPage() {
               <Link to={`/anime/${item.anime_id}`}>
                 <div className="aspect-[3/4] relative overflow-hidden">
                   <img
-                    src={item.anime.poster || '/placeholder-poster.jpg'}
+                    src={getImageUrl(item.anime.poster)}
                     alt={item.anime.title}
                     className="object-cover w-full h-full"
                     loading="lazy"

@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { getImageUrl } from '@/lib/imageUrl';
 
 export function ProfilePage() {
   const { data: user, isLoading } = useUser();
@@ -155,7 +156,7 @@ export function ProfilePage() {
                       <Card className="overflow-hidden transition-all hover:shadow-lg hover:scale-[1.02]">
                         <div className="aspect-[3/4] relative overflow-hidden">
                           <img
-                            src={item.anime.poster || '/placeholder-poster.jpg'}
+                            src={getImageUrl(item.anime.poster)}
                             alt={item.anime.title}
                             className="object-cover w-full h-full"
                             loading="lazy"

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Star, Calendar, Clock, Film, Heart, Plus } from 'lucide-react';
+import { getImageUrl } from '@/lib/imageUrl';
 
 export function AnimeDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -75,7 +76,7 @@ export function AnimeDetailPage() {
         <div className="fixed inset-0 -z-10">
           <div className="absolute inset-0 bg-gradient-to-b from-background/90 to-background" />
           <img
-            src={anime.cover}
+            src={getImageUrl(anime.cover)}
             alt=""
             className="w-full h-full object-cover blur-xl scale-110"
           />
@@ -85,7 +86,7 @@ export function AnimeDetailPage() {
       <div className="flex flex-col md:flex-row gap-8">
         <div className="flex-shrink-0">
           <img
-            src={anime.poster || '/placeholder-poster.jpg'}
+            src={getImageUrl(anime.poster)}
             alt={anime.title}
             className="w-64 rounded-lg shadow-lg"
           />
