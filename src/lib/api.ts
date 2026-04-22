@@ -45,6 +45,8 @@ export const animeApi = {
     search?: string;
     genres?: string;
     year?: number;
+    rating?: number;
+    tags?: string;
     sort?: string;
   }) =>
     api.get<AnimeListResponse>('/api/v1/anime', { params }),
