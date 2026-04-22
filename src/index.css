@@ -58,4 +58,16 @@
     background-color: oklch(var(--color-background));
     color: oklch(var(--color-foreground));
   }
+
+  /* Disable text selection */
+  * {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  
+  /* Allow input fields to be selectable */
+  input, textarea {
+    user-select: text;
+    -webkit-user-select: text;
+  }
 }
