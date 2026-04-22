@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import type {
   Token,
   User,
@@ -29,6 +29,19 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// Handle 401 responses - redirect to login
+api.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const authApi = {
   register: (email: string, username: string, password: string) =>
