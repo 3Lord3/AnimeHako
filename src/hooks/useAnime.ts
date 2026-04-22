@@ -11,6 +11,8 @@ export function useAnimeList(params?: {
   search?: string;
   genres?: string;
   year?: number;
+  rating?: number;
+  tags?: string;
   sort?: string;
 }) {
   return useQuery({
