@@ -19,12 +19,12 @@ export function AnimeCard({ anime, showRating = true }: AnimeCardProps) {
   const rating = anime.rating ? (typeof anime.rating === 'number' ? anime.rating : Number(anime.rating)) : null;
   
   return (
-    <Link to={`/anime/${anime.id}`} className="block">
+    <Link to={`/anime/${anime.id}`} className="group block">
       <div className="aspect-[3/4] relative overflow-hidden rounded-lg">
         <img
           src={getImageUrl(anime.poster)}
           alt={anime.title}
-          className="object-cover w-full h-full transition-all hover:scale-105"
+          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
         />
         {/* Gradient overlay for title */}
