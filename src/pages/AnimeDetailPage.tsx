@@ -1,11 +1,13 @@
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAnimeDetail, useAnimeReviews, useAddToList, useUserAnimeList, useToggleFavorite, useUpdateListEntry } from '@/hooks';
 import { useUser } from '@/hooks';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Star, Calendar, Clock, Film, Heart } from 'lucide-react';
+import { Star, Calendar, Clock, Film, Heart, Eye, CheckCircle, XCircle, CalendarClock } from 'lucide-react';
 import { getImageUrl } from '@/lib/imageUrl';
+import { cn } from '@/lib/utils';
 
 export function AnimeDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -24,7 +26,7 @@ export function AnimeDetailPage() {
 
   const userAnime = userAnimeList?.find((item) => item.anime_id === animeId);
 
-  const handleAddToList = (status: string) => {
+  const handleAddToList = (status: StatusType) => {
     if (!user) {
       navigate('/login');
       return;
@@ -32,12 +34,12 @@ export function AnimeDetailPage() {
     // If already in list, update status instead of adding new
     if (userAnime) {
       updateListEntry(
-        { animeId, data: { status: status as 'watching' | 'completed' | 'dropped' | 'planned' } },
+        { animeId, data: { status } },
         { onError: () => {} }
       );
     } else {
       addToList(
-        { anime_id: animeId, status: status as 'watching' | 'completed' | 'dropped' | 'planned' },
+        { anime_id: animeId, status },
         { onError: () => {} }
       );
     }
@@ -51,11 +53,20 @@ export function AnimeDetailPage() {
     toggleFavorite({ animeId, isFavorite: userAnime?.is_favorite || false });
   };
 
-  const statusLabels: Record<string, string> = {
+  const statusLabels = {
     watching: 'Смотрю',
     completed: 'Просмотрено',
     dropped: 'Брошено',
     planned: 'Запланировано',
+  } as const;
+
+  type StatusType = keyof typeof statusLabels;
+
+  const statusIcons: Record<StatusType, React.ReactNode> = {
+    watching: <Eye className="w-5 h-5" />,
+    completed: <CheckCircle className="w-5 h-5" />,
+    dropped: <XCircle className="w-5 h-5" />,
+    planned: <CalendarClock className="w-5 h-5" />,
   };
 
   const seasonLabels: Record<string, string> = {
@@ -65,7 +76,7 @@ export function AnimeDetailPage() {
     autumn: 'Осень',
   };
 
-  const statusOptions = ['watching', 'completed', 'dropped', 'planned'];
+  const statusOptions: StatusType[] = ['watching', 'completed', 'dropped', 'planned'];
 
   if (isLoading) {
     return <div className="text-center py-12">Загрузка...</div>;
@@ -90,12 +101,47 @@ export function AnimeDetailPage() {
       )}
 
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="flex-shrink-0">
+        {/* Poster column with buttons below */}
+        <div className="flex-shrink-0 flex flex-col items-center">
           <img
             src={getImageUrl(anime.poster)}
             alt={anime.title}
             className="w-64 rounded-lg shadow-lg"
           />
+          {user && (
+            <div className="flex gap-2 mt-4">
+              <Button
+                variant={userAnime?.is_favorite ? 'default' : 'outline'}
+                size="icon"
+                onClick={handleToggleFavorite}
+                className="relative group"
+              >
+                <Heart
+                  className={cn(
+                    'w-5 h-5',
+                    userAnime?.is_favorite ? 'fill-current' : ''
+                  )}
+                />
+                <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-background border rounded px-2 py-1 text-xs text-black whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                  {userAnime?.is_favorite ? 'В любимом' : 'В любимое'}
+                </span>
+              </Button>
+              {statusOptions.map((status) => (
+                <Button
+                  key={status}
+                  variant={userAnime?.status === status ? 'default' : 'outline'}
+                  size="icon"
+                  onClick={() => handleAddToList(status)}
+                  className="relative group"
+                >
+                  {statusIcons[status]}
+                  <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-background border rounded px-2 py-1 text-xs text-black whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    {statusLabels[status]}
+                  </span>
+                </Button>
+              ))}
+            </div>
+          )}
         </div>
         <div className="flex-1 space-y-4">
           <h1 className="text-3xl font-bold">{anime.title}</h1>
@@ -164,32 +210,6 @@ export function AnimeDetailPage() {
               </Badge>
             ))}
           </div>
-
-          {user && (
-            <div className="flex flex-wrap gap-2 pt-4">
-              {statusOptions.map((status) => (
-                <Button
-                  key={status}
-                  variant={userAnime?.status === status ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleAddToList(status)}
-                >
-                  {statusLabels[status]}
-                </Button>
-              ))}
-              <Button
-                variant={userAnime?.is_favorite ? 'default' : 'outline'}
-                onClick={handleToggleFavorite}
-              >
-                <Heart
-                  className={`w-4 h-4 mr-1 ${
-                    userAnime?.is_favorite ? 'fill-current' : ''
-                  }`}
-                />
-                {userAnime?.is_favorite ? 'В любимом' : 'В любимое'}
-              </Button>
-            </div>
-          )}
         </div>
       </div>
 
