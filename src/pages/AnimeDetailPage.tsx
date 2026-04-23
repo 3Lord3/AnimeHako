@@ -1,11 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { useAnimeDetail, useAnimeReviews, useAddToList, useUserAnimeList, useToggleFavorite } from '@/hooks';
+import { useAnimeDetail, useAnimeReviews, useAddToList, useUserAnimeList, useToggleFavorite, useUpdateListEntry } from '@/hooks';
 import { useUser } from '@/hooks';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Star, Calendar, Clock, Film, Heart, Plus } from 'lucide-react';
+import { Star, Calendar, Clock, Film, Heart } from 'lucide-react';
 import { getImageUrl } from '@/lib/imageUrl';
 
 export function AnimeDetailPage() {
@@ -20,7 +19,8 @@ export function AnimeDetailPage() {
   const { mutate: addToList } = useAddToList();
   const { mutate: toggleFavorite } = useToggleFavorite();
 
-  const [selectedStatus, setSelectedStatus] = useState<string>('watching');
+
+  const { mutate: updateListEntry } = useUpdateListEntry();
 
   const userAnime = userAnimeList?.find((item) => item.anime_id === animeId);
 
@@ -29,12 +29,18 @@ export function AnimeDetailPage() {
       navigate('/login');
       return;
     }
-    addToList(
-      { anime_id: animeId, status: status as 'watching' | 'completed' | 'dropped' | 'planned' },
-      {
-        onError: () => {},
-      }
-    );
+    // If already in list, update status instead of adding new
+    if (userAnime) {
+      updateListEntry(
+        { animeId, data: { status: status as 'watching' | 'completed' | 'dropped' | 'planned' } },
+        { onError: () => {} }
+      );
+    } else {
+      addToList(
+        { anime_id: animeId, status: status as 'watching' | 'completed' | 'dropped' | 'planned' },
+        { onError: () => {} }
+      );
+    }
   };
 
   const handleToggleFavorite = () => {
@@ -47,7 +53,7 @@ export function AnimeDetailPage() {
 
   const statusLabels: Record<string, string> = {
     watching: 'Смотрю',
-    completed: 'Просмотренно',
+    completed: 'Просмотрено',
     dropped: 'Брошено',
     planned: 'Запланировано',
   };
@@ -161,41 +167,27 @@ export function AnimeDetailPage() {
 
           {user && (
             <div className="flex flex-wrap gap-2 pt-4">
-              {!userAnime ? (
-                <>
-                  {statusOptions.map((status) => (
-                    <Button
-                      key={status}
-                      variant={selectedStatus === status ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setSelectedStatus(status)}
-                    >
-                      {statusLabels[status]}
-                    </Button>
-                  ))}
-                  <Button onClick={() => handleAddToList(selectedStatus)}>
-                    <Plus className="w-4 h-4 mr-1" />
-                    Добавить
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    variant={userAnime.is_favorite ? 'default' : 'outline'}
-                    onClick={handleToggleFavorite}
-                  >
-                    <Heart
-                      className={`w-4 h-4 mr-1 ${
-                        userAnime.is_favorite ? 'fill-current' : ''
-                      }`}
-                    />
-                    {userAnime.is_favorite ? 'В любимом' : 'В любимое'}
-                  </Button>
-                  <Badge variant="outline">
-                    {statusLabels[userAnime.status || 'watching']}
-                  </Badge>
-                </>
-              )}
+              {statusOptions.map((status) => (
+                <Button
+                  key={status}
+                  variant={userAnime?.status === status ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleAddToList(status)}
+                >
+                  {statusLabels[status]}
+                </Button>
+              ))}
+              <Button
+                variant={userAnime?.is_favorite ? 'default' : 'outline'}
+                onClick={handleToggleFavorite}
+              >
+                <Heart
+                  className={`w-4 h-4 mr-1 ${
+                    userAnime?.is_favorite ? 'fill-current' : ''
+                  }`}
+                />
+                {userAnime?.is_favorite ? 'В любимом' : 'В любимое'}
+              </Button>
             </div>
           )}
         </div>

@@ -45,7 +45,7 @@ export function ProfilePage() {
 
   const statusLabels: Record<string, string> = {
     watching: 'Смотрю',
-    completed: 'Просмотренно',
+    completed: 'Просмотрено',
     dropped: 'Брошено',
     planned: 'Запланировано',
   };
