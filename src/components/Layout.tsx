@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useUser, useAuth } from '@/hooks';
 import { Button } from '@/components/ui/button';
+import { User, List, Heart, LogOut } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -46,21 +47,30 @@ export function Layout() {
                   <div className="flex items-center gap-2 p-2">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">{user.username}</p>
-                      <p className="text-xs text-muted-foreground">{user.email}</p>
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Link to="/profile" className="w-full">Профиль</Link>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Link to="/profile" className="flex items-center w-full">
+                      <User className="w-4 h-4 mr-2" />
+                      Профиль
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link to="/profile/anime" className="w-full">Мой список</Link>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Link to="/profile/anime" className="flex items-center w-full">
+                      <List className="w-4 h-4 mr-2" />
+                      Мой список
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link to="/profile/favorites" className="w-full">Любимое</Link>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Link to="/profile/favorites" className="flex items-center w-full">
+                      <Heart className="w-4 h-4 mr-2" />
+                      Любимое
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout} className="cursor-pointer">
+                  <DropdownMenuItem onClick={logout} className="cursor-pointer text-destructive focus:text-destructive">
+                    <LogOut className="w-4 h-4 mr-2" />
                     Выйти
                   </DropdownMenuItem>
                 </DropdownMenuContent>
