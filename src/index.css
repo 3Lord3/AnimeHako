@@ -70,4 +70,9 @@
     user-select: text;
     -webkit-user-select: text;
   }
+  
+  /* Cursor pointer for interactive elements */
+  button, [role="button"], a, [role="tab"], [data-slot="dropdown-menu-item"] {
+    cursor: pointer;
+  }
 }

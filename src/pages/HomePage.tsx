@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useAnimeList, useGenres, useTags, useDebounce } from '@/hooks';
+import { useAnimeList, useGenres, useTags, useDebounce, useUserAnimeList } from '@/hooks';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -57,6 +57,7 @@ export function HomePage() {
   });
   const { data: genresData } = useGenres();
   const { data: tagsData } = useTags();
+  const { data: userAnimeList } = useUserAnimeList();
 
   const updateParams = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams);
@@ -322,7 +323,7 @@ export function HomePage() {
           Аниме не найдены
         </div>
       ) : (
-        <AnimeGrid anime={animeData?.data || []} />
+        <AnimeGrid anime={animeData?.data || []} userAnimeList={userAnimeList} />
       )}
     </div>
   );
