@@ -90,8 +90,8 @@ export const userApi = {
   updateProfile: (data: { username?: string; avatar?: string }) =>
     api.patch<User>('/api/v1/user/me', data),
   
-  getAnimeList: (status?: string) =>
-    api.get<UserAnimeResponse[]>('/api/v1/user/anime', { params: { status } }),
+  getAnimeList: (status?: string, favorites?: boolean) =>
+    api.get<UserAnimeResponse[]>('/api/v1/user/anime', { params: { status, favorites } }),
   
   addToList: (data: UserAnimeCreate) =>
     api.post<UserAnimeResponse>('/api/v1/user/anime', data),

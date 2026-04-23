@@ -6,7 +6,6 @@ import { HomePage } from '@/pages/HomePage';
 import { AnimeDetailPage } from '@/pages/AnimeDetailPage';
 import { ProfilePage } from '@/pages/ProfilePage';
 import { UserAnimeListPage } from '@/pages/UserAnimeListPage';
-import { FavoritesPage } from '@/pages/FavoritesPage';
 import { useUser } from '@/hooks';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -37,14 +36,6 @@ export function App() {
           element={
             <ProtectedRoute>
               <UserAnimeListPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="profile/favorites"
-          element={
-            <ProtectedRoute>
-              <FavoritesPage />
             </ProtectedRoute>
           }
         />

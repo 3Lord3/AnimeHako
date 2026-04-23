@@ -1,6 +1,5 @@
 import { Link, useSearchParams } from 'react-router-dom';
-import { useUserAnimeList, useUpdateListEntry, useRemoveFromList } from '@/hooks';
-import { Card, CardContent } from '@/components/ui/card';
+import { useUserAnimeList } from '@/hooks';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getImageUrl } from '@/lib/imageUrl';
@@ -8,35 +7,18 @@ import { getImageUrl } from '@/lib/imageUrl';
 export function UserAnimeListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const status = searchParams.get('status') || undefined;
-  const { data: userAnimeList, isLoading } = useUserAnimeList(status);
-  const { mutate: updateEntry } = useUpdateListEntry();
-  const { mutate: removeFromList } = useRemoveFromList();
+  const isFavorites = searchParams.get('favorites') === 'true';
+  const { data: userAnimeList, isLoading } = useUserAnimeList(status, isFavorites);
 
   const statusLabels: Record<string, string> = {
     watching: 'Смотрю',
-    completed: 'Просмотренно',
+    completed: 'Просмотрено',
     dropped: 'Брошено',
     planned: 'Запланировано',
+    favorites: 'Любимое',
   };
 
-  const statusColors: Record<string, string> = {
-    watching: 'bg-blue-500',
-    completed: 'bg-green-500',
-    dropped: 'bg-red-500',
-    planned: 'bg-yellow-500',
-  };
-
-  const handleStatusChange = (animeId: number, newStatus: string) => {
-    updateEntry({ animeId, data: { status: newStatus as 'watching' | 'completed' | 'dropped' | 'planned' } });
-  };
-
-  const handleRemove = (animeId: number) => {
-    if (confirm('Удалить из списка?')) {
-      removeFromList(animeId);
-    }
-  };
-
-  const statuses = ['watching', 'completed', 'dropped', 'planned'];
+  const statuses = ['watching', 'completed', 'dropped', 'planned', 'favorites'];
 
   return (
     <div className="space-y-6">
@@ -44,9 +26,11 @@ export function UserAnimeListPage() {
         {statuses.map((s) => (
           <Button
             key={s}
-            variant={status === s ? 'default' : 'outline'}
+            variant={status === s || (s === 'favorites' && isFavorites) ? 'default' : 'outline'}
             onClick={() =>
-              setSearchParams(status === s ? {} : { status: s })
+              s === 'favorites' 
+                ? setSearchParams({ favorites: 'true' })
+                : setSearchParams(status === s ? {} : { status: s })
             }
           >
             {statusLabels[s]}
@@ -63,59 +47,26 @@ export function UserAnimeListPage() {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {userAnimeList?.map((item) => (
-            <Card key={item.anime_id} className="overflow-hidden relative group">
-              <Link to={`/anime/${item.anime_id}`}>
-                <div className="aspect-[3/4] relative overflow-hidden">
-                  <img
-                    src={getImageUrl(item.anime.poster)}
-                    alt={item.anime.title}
-                    className="object-cover w-full h-full"
-                    loading="lazy"
-                  />
-                  <Badge
-                    className={`absolute top-2 left-2 ${
-                      statusColors[item.status || 'watching']
-                    }`}
-                  >
-                    {statusLabels[item.status || 'watching']}
-                  </Badge>
-                </div>
-                <CardContent className="p-3">
-                  <h3 className="font-semibold text-sm line-clamp-2">
+            <Link key={item.anime_id} to={`/anime/${item.anime_id}`} className="group block relative rounded-lg overflow-hidden">
+                <img
+                  src={getImageUrl(item.anime.poster)}
+                  alt={item.anime.title}
+                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+                <Badge
+                  className={`absolute top-2 left-2 ${
+                    isFavorites ? 'bg-pink-500' : 'bg-blue-500'
+                  }`}
+                >
+                  {isFavorites ? '♥' : statusLabels[item.status || 'watching']}
+                </Badge>
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3 pt-12">
+                  <h3 className="font-semibold text-sm text-white line-clamp-2">
                     {item.anime.title}
                   </h3>
-                </CardContent>
+                </div>
               </Link>
-              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                <select
-                  value={item.status || 'watching'}
-                  onChange={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleStatusChange(item.anime_id, e.target.value);
-                  }}
-                  onClick={(e) => e.preventDefault()}
-                  className="bg-background border rounded px-1 py-0.5 text-xs"
-                >
-                  {statuses.map((s) => (
-                    <option key={s} value={s}>
-                      {statusLabels[s]}
-                    </option>
-                  ))}
-                </select>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleRemove(item.anime_id);
-                  }}
-                >
-                  ✕
-                </Button>
-              </div>
-            </Card>
           ))}
         </div>
       )}

@@ -77,11 +77,11 @@ export function useTags() {
   });
 }
 
-export function useUserAnimeList(status?: string) {
+export function useUserAnimeList(status?: string, favorites?: boolean) {
   return useQuery({
-    queryKey: ['user', 'anime', status],
+    queryKey: ['user', 'anime', status, favorites],
     queryFn: async () => {
-      const { data } = await userApi.getAnimeList(status);
+      const { data } = await userApi.getAnimeList(status, favorites);
       return data;
     },
   });
