@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { getImageUrl } from '@/lib/imageUrl';
-import { STATUS_ICONS, ALL_STATUSES, type StatusType } from '@/types/constants';
+import { STATUS_ICONS, STATUS_COLORS, FAVORITE_ICON, ALL_STATUSES, type StatusType } from '@/types/constants';
 import { UserAnimeListPageSkeleton } from '@/components/loaders/PageSkeletons';
 
 export function UserAnimeListPage() {
@@ -71,7 +71,7 @@ export function UserAnimeListPage() {
         ))}
         <Button
           variant={isFavorites ? 'default' : 'outline'}
-          onClick={() => setSearchParams({ favorites: 'true' })}
+          onClick={() => setSearchParams(isFavorites ? {} : { favorites: 'true' })}
         >
           Любимое
         </Button>
@@ -94,15 +94,15 @@ export function UserAnimeListPage() {
                   loading="lazy"
                 />
                 <div className="absolute top-2 left-2 right-2 flex justify-between items-start gap-1">
-                  <Badge className="bg-blue-500 h-9 w-9 p-0 rounded-full">
+                  <Badge className={`h-9 w-9 p-0 rounded-full ${item.status ? STATUS_COLORS[item.status as StatusType] : 'bg-gray-500'}`}>
                     <span className="flex items-center justify-center w-full h-full">
                       {STATUS_ICONS[item.status as StatusType] || STATUS_ICONS.watching}
                     </span>
                   </Badge>
                   {item.is_favorite && (
                     <Badge className="bg-pink-500 h-9 w-9 p-0 rounded-full">
-                      <span className="flex items-center justify-center w-full h-full text-lg">
-                        ♥
+                      <span className="flex items-center justify-center w-full h-full">
+                        {FAVORITE_ICON}
                       </span>
                     </Badge>
                   )}
