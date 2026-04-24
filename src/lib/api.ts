@@ -31,13 +31,24 @@ api.interceptors.request.use((config) => {
 });
 
 // Handle 401 responses - redirect to login
+// Note: Uses callback approach to allow SPA navigation instead of window.location
+let redirectCallback: ((url: string) => void) | null = null;
+
+export const setAuthRedirectCallback = (callback: (url: string) => void) => {
+  redirectCallback = callback;
+};
+
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      if (redirectCallback) {
+        redirectCallback('/login');
+      } else {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
