@@ -32,8 +32,14 @@ export function AnimeDetailPage() {
       navigate('/login');
       return;
     }
-    // If already in list, update status instead of adding new
-    if (userAnime) {
+    // If already in list with the same status, clear status but keep favorite
+    if (userAnime?.status === status) {
+      updateListEntry(
+        { animeId, data: { status: null } },
+        { onError: () => {} }
+      );
+    } else if (userAnime) {
+      // If already in list, update status instead of adding new
       updateListEntry(
         { animeId, data: { status } },
         { onError: () => {} }
@@ -94,12 +100,10 @@ export function AnimeDetailPage() {
                 onClick={handleToggleFavorite}
                 className="relative group"
               >
-                <Heart
-                  className={cn(
-                    'w-5 h-5',
-                    userAnime?.is_favorite ? 'fill-current' : ''
-                  )}
-                />
+                <Heart className={cn(
+                  'w-5 h-5',
+                  userAnime?.is_favorite ? 'fill-current' : ''
+                )} />
                 <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-background border rounded px-2 py-1 text-xs text-black whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                   {userAnime?.is_favorite ? 'В любимом' : 'В любимое'}
                 </span>
