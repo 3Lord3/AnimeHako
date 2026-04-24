@@ -1,4 +1,4 @@
-import { Eye, CheckCircle, XCircle, CalendarClock } from 'lucide-react';
+import { Eye, CheckCircle, XCircle, CalendarClock, Heart } from 'lucide-react';
 
 export type StatusType = 'watching' | 'completed' | 'dropped' | 'planned';
 
@@ -24,6 +24,8 @@ export const STATUS_LABELS: Record<StatusType, string> = {
 };
 
 export const ALL_STATUSES: StatusType[] = ['watching', 'completed', 'dropped', 'planned'];
+
+export const FAVORITE_ICON = <Heart size={24} strokeWidth={2.5} />;
 
 export const SEASON_LABELS: Record<string, string> = {
   winter: 'Зима',
