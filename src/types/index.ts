@@ -56,7 +56,7 @@ export interface UserAnimeCreate {
 }
 
 export interface UserAnimeUpdate {
-  status?: 'watching' | 'completed' | 'dropped' | 'planned';
+  status?: 'watching' | 'completed' | 'dropped' | 'planned' | null;
   score?: number;
   episodes_watched?: number;
 }
