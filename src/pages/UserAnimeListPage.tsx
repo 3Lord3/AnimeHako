@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { getImageUrl } from '@/lib/imageUrl';
 import { STATUS_ICONS, ALL_STATUSES, type StatusType } from '@/types/constants';
+import { UserAnimeListPageSkeleton } from '@/components/loaders/PageSkeletons';
 
 export function UserAnimeListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -77,7 +78,7 @@ export function UserAnimeListPage() {
       </div>
 
       {isLoading ? (
-        <div className="text-center py-12">Загрузка...</div>
+        <UserAnimeListPageSkeleton />
       ) : displayList.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           Список пуст

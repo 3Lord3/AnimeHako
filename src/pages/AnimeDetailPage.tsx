@@ -8,6 +8,7 @@ import { Star, Calendar, Clock, Film, Heart } from 'lucide-react';
 import { getImageUrl } from '@/lib/imageUrl';
 import { cn } from '@/lib/utils';
 import { STATUS_LABELS, STATUS_ICONS, SEASON_LABELS, ALL_STATUSES, type StatusType } from '@/types/constants';
+import { AnimeDetailPageSkeleton } from '@/components/loaders/PageSkeletons';
 
 export function AnimeDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -56,7 +57,7 @@ export function AnimeDetailPage() {
   const statusOptions: StatusType[] = ALL_STATUSES;
 
   if (isLoading) {
-    return <div className="text-center py-12">Загрузка...</div>;
+    return <AnimeDetailPageSkeleton />;
   }
 
   if (!anime) {

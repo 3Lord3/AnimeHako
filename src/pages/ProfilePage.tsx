@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ProfilePageSkeleton } from '@/components/loaders/PageSkeletons';
 
 export function ProfilePage() {
   const { data: user, isLoading } = useUser();
@@ -21,7 +22,7 @@ export function ProfilePage() {
   }, [user?.username, isEditing]);
 
   if (isLoading) {
-    return <div className="text-center py-12">Загрузка...</div>;
+    return <ProfilePageSkeleton />;
   }
 
   if (!user) {

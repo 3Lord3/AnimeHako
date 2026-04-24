@@ -1,12 +1,13 @@
 import { useFavorites } from '@/hooks';
 import { Heart } from 'lucide-react';
 import { AnimeGrid } from '@/components/AnimeGrid';
+import { FavoritesPageSkeleton } from '@/components/loaders/PageSkeletons';
 
 export function FavoritesPage() {
   const { data: favorites, isLoading } = useFavorites();
 
   if (isLoading) {
-    return <div className="text-center py-12">Загрузка...</div>;
+    return <FavoritesPageSkeleton />;
   }
 
   if (!favorites || favorites.length === 0) {

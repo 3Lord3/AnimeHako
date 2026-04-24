@@ -317,7 +317,7 @@ export function HomePage() {
       </div>
 
       {isLoading ? (
-        <div className="text-center py-12">Загрузка...</div>
+        <AnimeGrid anime={[]} isLoading={true} />
       ) : animeData?.data.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           Аниме не найдены
