@@ -3,7 +3,7 @@ import { Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { AnimeListItem } from '@/types';
 import { getImageUrl } from '@/lib/imageUrl';
-import { STATUS_ICONS, STATUS_COLORS, getRatingColor, type StatusType } from '@/types/constants';
+import { STATUS_ICONS, STATUS_COLORS, FAVORITE_ICON, getRatingColor, type StatusType } from '@/types/constants';
 
 interface AnimeCardProps {
   anime: AnimeListItem;
@@ -36,8 +36,8 @@ export function AnimeCard({ anime, showRating = true, userStatus, isFavorite }: 
             )}
             {isFavorite && (
               <Badge className="bg-pink-500 h-9 w-9 p-0 rounded-full">
-                <span className="flex items-center justify-center w-full h-full text-lg">
-                  ♥
+                <span className="flex items-center justify-center w-full h-full">
+                  {FAVORITE_ICON}
                 </span>
               </Badge>
             )}
