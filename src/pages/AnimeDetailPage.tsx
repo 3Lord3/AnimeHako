@@ -1,13 +1,13 @@
-import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAnimeDetail, useAnimeReviews, useAddToList, useUserAnimeList, useToggleFavorite, useUpdateListEntry } from '@/hooks';
 import { useUser } from '@/hooks';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Star, Calendar, Clock, Film, Heart, Eye, CheckCircle, XCircle, CalendarClock } from 'lucide-react';
+import { Star, Calendar, Clock, Film, Heart } from 'lucide-react';
 import { getImageUrl } from '@/lib/imageUrl';
 import { cn } from '@/lib/utils';
+import { STATUS_LABELS, STATUS_ICONS, SEASON_LABELS, ALL_STATUSES, type StatusType } from '@/types/constants';
 
 export function AnimeDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -53,30 +53,7 @@ export function AnimeDetailPage() {
     toggleFavorite({ animeId, isFavorite: userAnime?.is_favorite || false });
   };
 
-  const statusLabels = {
-    watching: 'Смотрю',
-    completed: 'Просмотрено',
-    dropped: 'Брошено',
-    planned: 'Запланировано',
-  } as const;
-
-  type StatusType = keyof typeof statusLabels;
-
-  const statusIcons: Record<StatusType, React.ReactNode> = {
-    watching: <Eye className="w-5 h-5" />,
-    completed: <CheckCircle className="w-5 h-5" />,
-    dropped: <XCircle className="w-5 h-5" />,
-    planned: <CalendarClock className="w-5 h-5" />,
-  };
-
-  const seasonLabels: Record<string, string> = {
-    winter: 'Зима',
-    spring: 'Весна',
-    summer: 'Лето',
-    autumn: 'Осень',
-  };
-
-  const statusOptions: StatusType[] = ['watching', 'completed', 'dropped', 'planned'];
+  const statusOptions: StatusType[] = ALL_STATUSES;
 
   if (isLoading) {
     return <div className="text-center py-12">Загрузка...</div>;
@@ -134,9 +111,9 @@ export function AnimeDetailPage() {
                   onClick={() => handleAddToList(status)}
                   className="relative group"
                 >
-                  {statusIcons[status]}
+                  {STATUS_ICONS[status]}
                   <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-background border rounded px-2 py-1 text-xs text-black whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                    {statusLabels[status]}
+                    {STATUS_LABELS[status]}
                   </span>
                 </Button>
               ))}
@@ -167,7 +144,7 @@ export function AnimeDetailPage() {
             )}
             {anime.season && (
               <Badge variant="outline">
-                {seasonLabels[anime.season] || anime.season}
+                {SEASON_LABELS[anime.season] || anime.season}
               </Badge>
             )}
             {anime.status && (

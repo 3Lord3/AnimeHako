@@ -3,8 +3,8 @@ import { useUserAnimeList } from '@/hooks';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Eye, CheckCircle, XCircle, CalendarClock, Heart } from 'lucide-react';
 import { getImageUrl } from '@/lib/imageUrl';
+import { STATUS_ICONS, ALL_STATUSES, type StatusType } from '@/types/constants';
 
 export function UserAnimeListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -13,14 +13,6 @@ export function UserAnimeListPage() {
   const { data: userAnimeList, isLoading } = useUserAnimeList(statusParam, isFavorites);
   const { data: allLists } = useUserAnimeList();
 
-  const statusIcons: Record<string, React.ReactNode> = {
-    watching: <Eye size={24} strokeWidth={2.5} />,
-    completed: <CheckCircle size={24} strokeWidth={2.5} />,
-    dropped: <XCircle size={24} strokeWidth={2.5} />,
-    planned: <CalendarClock size={24} strokeWidth={2.5} />,
-    favorites: <Heart size={24} strokeWidth={2.5} />,
-  };
-
   const statusLabels: Record<string, string> = {
     watching: 'Смотрю',
     completed: 'Просмотрено',
@@ -28,8 +20,6 @@ export function UserAnimeListPage() {
     planned: 'Запланировано',
     favorites: 'Любимое',
   };
-
-  const statuses = ['watching', 'completed', 'dropped', 'planned', 'favorites'];
 
   const [watching, completed, dropped, planned, favorites] = [
     allLists?.filter((a) => a.status === 'watching') || [],
@@ -67,19 +57,23 @@ export function UserAnimeListPage() {
 
       {/* Filter buttons */}
       <div className="flex gap-2 flex-wrap">
-        {statuses.map((s) => (
+        {ALL_STATUSES.map((s) => (
           <Button
             key={s}
-            variant={statusParam === s || (s === 'favorites' && isFavorites) ? 'default' : 'outline'}
+            variant={statusParam === s ? 'default' : 'outline'}
             onClick={() =>
-              s === 'favorites' 
-                ? setSearchParams({ favorites: 'true' })
-                : setSearchParams(statusParam === s ? {} : { status: s })
+              setSearchParams(statusParam === s ? {} : { status: s })
             }
           >
             {statusLabels[s]}
           </Button>
         ))}
+        <Button
+          variant={isFavorites ? 'default' : 'outline'}
+          onClick={() => setSearchParams({ favorites: 'true' })}
+        >
+          Любимое
+        </Button>
       </div>
 
       {isLoading ? (
@@ -101,7 +95,7 @@ export function UserAnimeListPage() {
                 <div className="absolute top-2 left-2 right-2 flex justify-between items-start gap-1">
                   <Badge className="bg-blue-500 h-9 w-9 p-0 rounded-full">
                     <span className="flex items-center justify-center w-full h-full">
-                      {statusIcons[item.status || 'watching']}
+                      {STATUS_ICONS[item.status as StatusType] || STATUS_ICONS.watching}
                     </span>
                   </Badge>
                   {item.is_favorite && (

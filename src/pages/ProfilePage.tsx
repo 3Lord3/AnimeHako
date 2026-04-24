@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useUser, useUpdateProfile } from '@/hooks';
 import { Button } from '@/components/ui/button';
@@ -10,8 +10,15 @@ export function ProfilePage() {
   const { data: user, isLoading } = useUser();
   const { mutate: updateProfile } = useUpdateProfile();
 
-  const [username, setUsername] = useState(user?.username || '');
+  const [username, setUsername] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+
+  // Initialize username when user data is available
+  useEffect(() => {
+    if (user?.username && !isEditing) {
+      setUsername(user.username);
+    }
+  }, [user?.username, isEditing]);
 
   if (isLoading) {
     return <div className="text-center py-12">Загрузка...</div>;
