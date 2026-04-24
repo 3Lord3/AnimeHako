@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { animeApi, genresApi, tagsApi, userApi } from '@/lib/api';
+import { useUser } from './useAuth';
 import type {
   UserAnimeCreate,
   UserAnimeUpdate,
@@ -78,12 +79,15 @@ export function useTags() {
 }
 
 export function useUserAnimeList(status?: string, favorites?: boolean) {
+  const { data: user } = useUser();
+  
   return useQuery({
     queryKey: ['user', 'anime', status, favorites],
     queryFn: async () => {
       const { data } = await userApi.getAnimeList(status, favorites);
       return data;
     },
+    enabled: !!user,
   });
 }
 
