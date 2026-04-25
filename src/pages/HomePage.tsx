@@ -164,7 +164,7 @@ export function HomePage() {
           <Dialog open={filtersOpen} onOpenChange={setFiltersOpen}>
             <Button
               variant="outline"
-              className="relative cursor-pointer"
+              className="relative cursor-pointer text-foreground"
               onClick={() => setFiltersOpen(true)}
             >
               <Filter className="w-4 h-4 mr-2" />
@@ -300,7 +300,7 @@ export function HomePage() {
           <Button
             variant={sort === 'rating' ? 'default' : 'outline'}
             size="sm"
-            className="cursor-pointer"
+            className="cursor-pointer text-foreground"
             onClick={() => updateParams('sort', sort === 'rating' ? '' : 'rating')}
           >
             <Star className="w-4 h-4 mr-1" />
@@ -309,7 +309,7 @@ export function HomePage() {
           <Button
             variant={sort === 'year' ? 'default' : 'outline'}
             size="sm"
-            className="cursor-pointer"
+            className="cursor-pointer text-foreground"
             onClick={() => updateParams('sort', sort === 'year' ? '' : 'year')}
           >
             <Calendar className="w-4 h-4 mr-1" />

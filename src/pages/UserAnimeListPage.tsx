@@ -62,6 +62,7 @@ export function UserAnimeListPage() {
           <Button
             key={s}
             variant={statusParam === s ? 'default' : 'outline'}
+            className="text-foreground"
             onClick={() =>
               setSearchParams(statusParam === s ? {} : { status: s })
             }
@@ -71,6 +72,7 @@ export function UserAnimeListPage() {
         ))}
         <Button
           variant={isFavorites ? 'default' : 'outline'}
+          className="text-foreground"
           onClick={() => setSearchParams(isFavorites ? {} : { favorites: 'true' })}
         >
           Любимое
@@ -103,7 +105,7 @@ export function UserAnimeListPage() {
                     </span>
                   </Badge>
                   {item.is_favorite && (
-                    <Badge title="Избранное" className="bg-pink-500 h-9 w-9 p-0 rounded-full cursor-pointer">
+                    <Badge title="Избранное" className="bg-pink-500 text-white h-9 w-9 p-0 rounded-full cursor-pointer">
                       <span className="flex items-center justify-center w-full h-full">
                         {FAVORITE_ICON}
                       </span>

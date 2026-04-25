@@ -115,12 +115,12 @@ export function AnimeDetailPage() {
                 variant={userAnime?.is_favorite ? 'default' : 'outline'}
                 size="icon"
                 onClick={handleToggleFavorite}
-                className="cursor-pointer"
+                className="cursor-pointer text-foreground"
                 title={userAnime?.is_favorite ? 'В любимом' : 'В любимое'}
               >
                 <Heart className={cn(
                   'w-5 h-5',
-                  userAnime?.is_favorite ? 'fill-current' : ''
+                  userAnime?.is_favorite ? 'fill-current text-white' : 'text-foreground'
                 )} />
               </Button>
               {statusOptions.map((status) => (
@@ -129,16 +129,19 @@ export function AnimeDetailPage() {
                   variant={userAnime?.status === status ? 'default' : 'outline'}
                   size="icon"
                   onClick={() => handleAddToList(status)}
+                  className="cursor-pointer text-foreground"
                   title={STATUS_LABELS[status]}
                 >
-                  {STATUS_ICONS[status]}
+                  <span className="text-white">
+                    {STATUS_ICONS[status]}
+                  </span>
                 </Button>
               ))}
             </div>
           )}
         </div>
         <div className="flex-1 space-y-4">
-          <h1 className="text-3xl font-bold">{anime.title}</h1>
+          <h1 className="text-3xl font-bold text-foreground">{anime.title}</h1>
           {anime.title_en && (
             <p className="text-xl text-muted-foreground">{anime.title_en}</p>
           )}

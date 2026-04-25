@@ -10,10 +10,10 @@ export const STATUS_ICONS: Record<StatusType, React.ReactNode> = {
 };
 
 export const STATUS_COLORS: Record<StatusType, string> = {
-  watching: 'bg-blue-500',
-  completed: 'bg-green-500',
-  dropped: 'bg-red-500',
-  planned: 'bg-yellow-500',
+  watching: 'bg-blue-500 text-white',
+  completed: 'bg-green-500 text-white',
+  dropped: 'bg-red-500 text-white',
+  planned: 'bg-yellow-500 text-white',
 };
 
 export const STATUS_LABELS: Record<StatusType, string> = {
@@ -36,7 +36,7 @@ export const SEASON_LABELS: Record<string, string> = {
 
 export function getRatingColor(rating: number | string): string {
   const r = typeof rating === 'number' ? rating : Number(rating);
-  if (r >= 8) return 'bg-green-500';
-  if (r >= 6) return 'bg-yellow-500';
-  return 'bg-red-500';
+  if (r >= 8) return 'bg-green-500 text-white';
+  if (r >= 6) return 'bg-yellow-500 text-black';
+  return 'bg-red-500 text-white';
 }
