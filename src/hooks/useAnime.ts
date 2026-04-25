@@ -12,7 +12,7 @@ export function useAnimeList(params?: {
   search?: string;
   genres?: string;
   year?: number;
-  rating?: number;
+  min_rating?: number;
   tags?: string;
   sort?: string;
 }) {
