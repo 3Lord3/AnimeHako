@@ -18,7 +18,7 @@ export function HomePage() {
   const genres = searchParams.get('genres') || '';
   const year = searchParams.get('year') ? parseInt(searchParams.get('year')!) : undefined;
   const sort = searchParams.get('sort') || '';
-  const rating = searchParams.get('rating') ? parseFloat(searchParams.get('rating')!) : undefined;
+  const minRating = searchParams.get('rating') ? parseFloat(searchParams.get('rating')!) : undefined;
   const tags = searchParams.get('tags') || '';
 
   const [searchInput, setSearchInput] = useState(search);
@@ -67,7 +67,7 @@ export function HomePage() {
     genres: genres || undefined,
     year,
     sort: sort || undefined,
-    rating,
+    min_rating: minRating,
     tags,
   });
   const { data: genresData } = useGenres();
@@ -123,16 +123,18 @@ export function HomePage() {
   // Rating filter options
   const ratingOptions = [9, 8, 7, 6];
 
-  // Clear all filters
-  const clearFilters = () => {
-    updateParams('genres', '');
-    updateParams('year', '');
-    updateParams('rating', '');
-    updateParams('tags', '');
-    updateParams('sort', '');
+  // Clear all filters (only filters, not search)
+  const clearFiltersOnly = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete('genres');
+    params.delete('year');
+    params.delete('rating');
+    params.delete('tags');
+    params.delete('sort');
+    setSearchParams(params);
   };
 
-  const hasActiveFilters = genres || year || rating || tags || sort;
+  const hasActiveFilters = genres || year || minRating || tags || sort;
 
   return (
     <div className="space-y-6">
@@ -196,9 +198,9 @@ export function HomePage() {
                     {ratingOptions.map((r) => (
                       <Badge
                         key={r}
-                        variant={rating === r ? 'default' : 'secondary'}
+                        variant={minRating === r ? 'default' : 'secondary'}
                         className="cursor-pointer"
-                        onClick={() => updateParams('rating', rating === r ? '' : String(r))}
+                        onClick={() => updateParams('rating', minRating === r ? '' : String(r))}
                       >
                         <Star className="w-3 h-3 mr-1" />
                         {r}+
@@ -276,7 +278,7 @@ export function HomePage() {
                     variant="outline"
                     size="sm"
                     className="cursor-pointer"
-                    onClick={clearFilters}
+                    onClick={clearFiltersOnly}
                   >
                     Очистить
                   </Button>
@@ -285,7 +287,7 @@ export function HomePage() {
                     className="cursor-pointer"
                     onClick={() => setFiltersOpen(false)}
                   >
-                    Применить
+                    Готово
                   </Button>
                 </div>
               </div>
@@ -321,9 +323,9 @@ export function HomePage() {
               <X className="w-3 h-3 ml-1" />
             </Button>
           )}
-          {rating && (
+          {minRating && (
             <Button variant="secondary" size="sm" onClick={() => updateParams('rating', '')}>
-              Рейтинг: {rating}+
+              Рейтинг: {minRating}+
               <X className="w-3 h-3 ml-1" />
             </Button>
           )}
@@ -337,6 +339,11 @@ export function HomePage() {
             <Button variant="secondary" size="sm" onClick={() => updateParams('tags', '')}>
               Теги: {tags.split(',').length}
               <X className="w-3 h-3 ml-1" />
+            </Button>
+          )}
+          {(year || minRating || genres || tags) && (
+            <Button variant="secondary" size="sm" onClick={clearFiltersOnly}>
+              Очистить фильтры
             </Button>
           )}
         </div>
