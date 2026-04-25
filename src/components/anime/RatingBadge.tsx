@@ -6,8 +6,14 @@ interface RatingBadgeProps {
 }
 
 export function RatingBadge({ rating }: RatingBadgeProps) {
+  const validRating = typeof rating === 'number' && !isNaN(rating);
+  
+  if (!validRating) {
+    return null;
+  }
+  
   return (
-    <div className={`${getRatingColor(rating)} h-9 px-1.5 rounded flex items-center gap-0.5`}>
+    <div title={`Рейтинг: ${rating.toFixed(1)}`} className={`${getRatingColor(rating)} h-9 px-1.5 rounded flex items-center gap-0.5 cursor-pointer`}>
       <Star className="w-4 h-4 fill-white text-white" />
       <span className="text-sm font-bold text-white">
         {rating.toFixed(1)}

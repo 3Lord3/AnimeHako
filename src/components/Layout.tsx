@@ -1,7 +1,7 @@
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { useUser, useAuth } from '@/hooks';
 import { Button } from '@/components/ui/button';
-import { User, List, Heart, LogOut } from 'lucide-react';
+import { User, List, LogOut } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -16,12 +16,18 @@ export function Layout() {
   const { data: user } = useUser();
   const { logout } = useAuth();
   const location = useLocation();
+  const [, setSearchParams] = useSearchParams();
+
+  const handleLogoClick = () => {
+    // Clear search query when clicking on logo
+    setSearchParams({});
+  };
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b">
+      <header className="border-b border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold">
+          <Link to="/" className="text-2xl font-bold" onClick={handleLogoClick}>
             AnimeHako
           </Link>
           <nav className="flex items-center gap-6">
@@ -60,12 +66,6 @@ export function Layout() {
                     <Link to="/profile/anime" className="flex items-center w-full">
                       <List className="w-4 h-4 mr-2" />
                       Мой список
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <Link to="/profile/favorites" className="flex items-center w-full">
-                      <Heart className="w-4 h-4 mr-2" />
-                      Любимое
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />

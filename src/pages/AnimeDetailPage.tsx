@@ -4,7 +4,7 @@ import { useUser } from '@/hooks';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Star, Calendar, Clock, Film, Heart } from 'lucide-react';
+import { Star, Calendar, Clock, Film, Heart, ArrowLeft } from 'lucide-react';
 import { getImageUrl } from '@/lib/imageUrl';
 import { cn } from '@/lib/utils';
 import { STATUS_LABELS, STATUS_ICONS, SEASON_LABELS, ALL_STATUSES, type StatusType } from '@/types/constants';
@@ -72,6 +72,23 @@ export function AnimeDetailPage() {
 
   return (
     <div className="space-y-8">
+      {/* Back button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => {
+          if (window.history.length > 1) {
+            navigate(-1);
+          } else {
+            navigate('/');
+          }
+        }}
+        className="cursor-pointer"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Назад
+      </Button>
+
       {/* Hero with blurred background */}
       {anime.cover && (
         <div className="fixed inset-0 -z-10">
@@ -98,15 +115,13 @@ export function AnimeDetailPage() {
                 variant={userAnime?.is_favorite ? 'default' : 'outline'}
                 size="icon"
                 onClick={handleToggleFavorite}
-                className="relative group"
+                className="cursor-pointer"
+                title={userAnime?.is_favorite ? 'В любимом' : 'В любимое'}
               >
                 <Heart className={cn(
                   'w-5 h-5',
                   userAnime?.is_favorite ? 'fill-current' : ''
                 )} />
-                <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-background border rounded px-2 py-1 text-xs text-black whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                  {userAnime?.is_favorite ? 'В любимом' : 'В любимое'}
-                </span>
               </Button>
               {statusOptions.map((status) => (
                 <Button
@@ -114,12 +129,9 @@ export function AnimeDetailPage() {
                   variant={userAnime?.status === status ? 'default' : 'outline'}
                   size="icon"
                   onClick={() => handleAddToList(status)}
-                  className="relative group"
+                  title={STATUS_LABELS[status]}
                 >
                   {STATUS_ICONS[status]}
-                  <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-background border rounded px-2 py-1 text-xs text-black whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                    {STATUS_LABELS[status]}
-                  </span>
                 </Button>
               ))}
             </div>
@@ -135,13 +147,13 @@ export function AnimeDetailPage() {
           )}
 
           <div className="flex flex-wrap gap-2">
-            {anime.rating && (
+            {anime.rating !== null && anime.rating !== undefined && !isNaN(Number(anime.rating)) && (
               <Badge variant="outline" className="flex items-center gap-1">
                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                 {typeof anime.rating === 'number' ? anime.rating.toFixed(1) : Number(anime.rating).toFixed(1)}
               </Badge>
             )}
-            {anime.year && (
+            {anime.year && anime.year > 0 && (
               <Badge variant="outline" className="flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
                 {anime.year}
@@ -157,13 +169,13 @@ export function AnimeDetailPage() {
                 {anime.status === 'ongoing' ? 'Онгоинг' : 'Завершено'}
               </Badge>
             )}
-            {anime.episodes && (
+            {anime.episodes && anime.episodes > 0 && (
               <Badge variant="outline" className="flex items-center gap-1">
                 <Film className="w-4 h-4" />
                 {anime.episodes} эп.
               </Badge>
             )}
-            {anime.duration && (
+            {anime.duration && anime.duration > 0 && (
               <Badge variant="outline" className="flex items-center gap-1">
                 <Clock className="w-4 h-4" />
                 {anime.duration} мин.

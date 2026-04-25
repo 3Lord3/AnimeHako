@@ -32,7 +32,7 @@ export function UserAnimeListPage() {
 
   const stats = [
     { label: 'Смотрю', count: watching.length },
-    { label: 'Просмотренно', count: completed.length },
+    { label: 'Просмотрено', count: completed.length },
     { label: 'Брошено', count: dropped.length },
     { label: 'Запланировано', count: planned.length },
     { label: 'Любимое', count: favorites.length },
@@ -94,13 +94,16 @@ export function UserAnimeListPage() {
                   loading="lazy"
                 />
                 <div className="absolute top-2 left-2 right-2 flex justify-between items-start gap-1">
-                  <Badge className={`h-9 w-9 p-0 rounded-full ${item.status ? STATUS_COLORS[item.status as StatusType] : 'bg-gray-500'}`}>
+                  <Badge 
+                    title={item.status === 'watching' ? 'Смотрю' : item.status === 'completed' ? 'Просмотрено' : item.status === 'dropped' ? 'Брошено' : 'Запланировано'}
+                    className={`h-9 w-9 p-0 rounded-full cursor-pointer ${item.status ? STATUS_COLORS[item.status as StatusType] : 'bg-gray-500'}`}
+                  >
                     <span className="flex items-center justify-center w-full h-full">
                       {STATUS_ICONS[item.status as StatusType] || STATUS_ICONS.watching}
                     </span>
                   </Badge>
                   {item.is_favorite && (
-                    <Badge className="bg-pink-500 h-9 w-9 p-0 rounded-full">
+                    <Badge title="Избранное" className="bg-pink-500 h-9 w-9 p-0 rounded-full cursor-pointer">
                       <span className="flex items-center justify-center w-full h-full">
                         {FAVORITE_ICON}
                       </span>

@@ -85,7 +85,7 @@ export function RegisterPage() {
                 minLength={3}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 pb-4">
               <Label htmlFor="password">Пароль</Label>
               <Input
                 id="password"
@@ -96,7 +96,7 @@ export function RegisterPage() {
                 minLength={6}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 pb-4">
               <Label htmlFor="confirmPassword">Подтвердите пароль</Label>
               <Input
                 id="confirmPassword"
@@ -108,7 +108,7 @@ export function RegisterPage() {
               />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
+          <CardFooter className="flex flex-col gap-4 border-border">
             <Button type="submit" className="w-full" disabled={isRegistering}>
               {isRegistering ? 'Регистрация...' : 'Зарегистрироваться'}
             </Button>

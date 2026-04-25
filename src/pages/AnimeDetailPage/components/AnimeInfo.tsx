@@ -20,13 +20,13 @@ export function AnimeInfo({ anime }: AnimeInfoProps) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
-        {anime.rating && (
+        {anime.rating !== null && anime.rating !== undefined && !isNaN(Number(anime.rating)) && (
           <Badge variant="outline" className="flex items-center gap-1">
             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
             {typeof anime.rating === 'number' ? anime.rating.toFixed(1) : Number(anime.rating).toFixed(1)}
           </Badge>
         )}
-        {anime.year && (
+        {anime.year && anime.year > 0 && (
           <Badge variant="outline" className="flex items-center gap-1">
             <Calendar className="w-4 h-4" />
             {anime.year}
@@ -42,13 +42,13 @@ export function AnimeInfo({ anime }: AnimeInfoProps) {
             {anime.status === 'ongoing' ? 'Онгоинг' : 'Завершено'}
           </Badge>
         )}
-        {anime.episodes && (
+        {anime.episodes && anime.episodes > 0 && (
           <Badge variant="outline" className="flex items-center gap-1">
             <Film className="w-4 h-4" />
             {anime.episodes} эп.
           </Badge>
         )}
-        {anime.duration && (
+        {anime.duration && anime.duration > 0 && (
           <Badge variant="outline" className="flex items-center gap-1">
             <Clock className="w-4 h-4" />
             {anime.duration} мин.

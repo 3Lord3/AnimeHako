@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAnimeList, useGenres, useTags, useDebounce, useUserAnimeList } from '@/hooks';
 import { Button } from '@/components/ui/button';
@@ -22,14 +22,29 @@ export function HomePage() {
   const tags = searchParams.get('tags') || '';
 
   const [searchInput, setSearchInput] = useState(search);
+  const isUserTypingRef = useRef(false);
+
+  // Sync with URL only when navigating (not on user typing)
+  useEffect(() => {
+    if (!isUserTypingRef.current) {
+      setSearchInput(search);
+    }
+  }, [search]);
+
+  const clearSearch = () => {
+    setSearchInput('');
+    isUserTypingRef.current = false;
+    const params = new URLSearchParams(searchParams);
+    params.delete('search');
+    setSearchParams(params);
+  };
+
+  // Debounce search input
+  const debouncedSearch = useDebounce(searchInput, 300);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [tagSearchInput, setTagSearchInput] = useState('');
   const [genreSearchInput, setGenreSearchInput] = useState('');
   const yearParam = year ? String(year) : '';
-
-
-  // Debounce search input
-  const debouncedSearch = useDebounce(searchInput, 300);
 
   // Update URL when debounced search changes
   useEffect(() => {
@@ -129,9 +144,20 @@ export function HomePage() {
             <Input
               placeholder="Поиск аниме..."
               value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className="pl-10"
+              onChange={(e) => {
+                isUserTypingRef.current = true;
+                setSearchInput(e.target.value);
+              }}
+              className="pl-10 pr-10"
             />
+            {searchInput && (
+              <button
+                onClick={clearSearch}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
           <Dialog open={filtersOpen} onOpenChange={setFiltersOpen}>
             <Button

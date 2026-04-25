@@ -14,6 +14,7 @@ interface AnimeCardProps {
 
 export function AnimeCard({ anime, showRating = true, userStatus, isFavorite }: AnimeCardProps) {
   const rating = anime.rating ? (typeof anime.rating === 'number' ? anime.rating : Number(anime.rating)) : null;
+  const validRating = rating !== null && !isNaN(rating);
   
   return (
     <Link to={`/anime/${anime.id}`} className="group block">
@@ -28,22 +29,25 @@ export function AnimeCard({ anime, showRating = true, userStatus, isFavorite }: 
         <div className="absolute top-2 left-2 right-2 flex justify-between items-start gap-1">
           <div className="flex gap-1">
             {userStatus && STATUS_COLORS[userStatus] && (
-              <Badge className={`${STATUS_COLORS[userStatus]} h-9 w-9 p-0 rounded-full`}>
+              <Badge 
+                title={userStatus === 'watching' ? 'Смотрю' : userStatus === 'completed' ? 'Просмотрено' : userStatus === 'dropped' ? 'Брошено' : 'Запланировано'}
+                className={`${STATUS_COLORS[userStatus]} h-9 w-9 p-0 rounded-full cursor-pointer`}
+              >
                 <span className="flex items-center justify-center w-full h-full">
                   {STATUS_ICONS[userStatus]}
                 </span>
               </Badge>
             )}
             {isFavorite && (
-              <Badge className="bg-pink-500 h-9 w-9 p-0 rounded-full">
+              <Badge title="Избранное" className="bg-pink-500 h-9 w-9 p-0 rounded-full cursor-pointer">
                 <span className="flex items-center justify-center w-full h-full">
                   {FAVORITE_ICON}
                 </span>
               </Badge>
             )}
           </div>
-          {showRating && rating !== null && (
-            <div className={`${getRatingColor(rating)} h-9 px-1.5 rounded flex items-center gap-0.5`}>
+          {showRating && validRating && (
+            <div title={`Рейтинг: ${rating.toFixed(1)}`} className={`${getRatingColor(rating)} h-9 px-1.5 rounded flex items-center gap-0.5 cursor-pointer`}>
               <Star className="w-4 h-4 fill-white text-white" />
               <span className="text-sm font-bold text-white">
                 {rating.toFixed(1)}

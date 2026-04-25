@@ -56,7 +56,7 @@ export function LoginPage() {
                 required
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 pb-4">
               <Label htmlFor="password">Пароль</Label>
               <Input
                 id="password"
@@ -67,7 +67,7 @@ export function LoginPage() {
               />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
+          <CardFooter className="flex flex-col gap-4 border-border">
             <Button type="submit" className="w-full" disabled={isLoggingIn}>
               {isLoggingIn ? 'Вход...' : 'Войти'}
             </Button>
