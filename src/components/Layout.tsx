@@ -1,6 +1,5 @@
 import { Link, Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { useUser, useAuth } from '@/hooks';
-import { Button } from '@/components/ui/button';
 import { User, List, LogOut } from 'lucide-react';
 
 import {
@@ -11,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ThemeSwitcher } from './ThemeSwitcher';
 
 export function Layout() {
   const { data: user } = useUser();
@@ -27,10 +27,10 @@ export function Layout() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold" onClick={handleLogoClick}>
+          <Link to="/" className="text-2xl font-bold text-foreground" onClick={handleLogoClick}>
             AnimeHako
           </Link>
-          <nav className="flex items-center gap-6">
+          <nav className="flex items-center gap-6 text-foreground">
             <Link
               to="/"
               className={`hover:text-primary transition-colors ${
@@ -68,6 +68,7 @@ export function Layout() {
                       Мой список
                     </Link>
                   </DropdownMenuItem>
+                  <ThemeSwitcher />
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout} className="cursor-pointer text-destructive focus:text-destructive">
                     <LogOut className="w-4 h-4 mr-2" />
@@ -76,19 +77,30 @@ export function Layout() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="flex items-center gap-2">
-                <Link to="/login">
-                  <Button variant="ghost">Вход</Button>
-                </Link>
-                <Link to="/register">
-                  <Button>Регистрация</Button>
-                </Link>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <User className="w-6 h-6 cursor-pointer" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Link to="/login" className="flex items-center w-full">
+                      Вход
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <Link to="/register" className="flex items-center w-full">
+                      Регистрация
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <ThemeSwitcher />
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </nav>
         </div>
       </header>
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 overscroll-none">
         <Outlet />
       </main>
     </div>
