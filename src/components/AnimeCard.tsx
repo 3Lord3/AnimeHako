@@ -33,7 +33,7 @@ export function AnimeCard({ anime, showRating = true, userStatus, isFavorite }: 
                 title={userStatus === 'watching' ? 'Смотрю' : userStatus === 'completed' ? 'Просмотрено' : userStatus === 'dropped' ? 'Брошено' : 'Запланировано'}
                 className={`${STATUS_COLORS[userStatus]} h-9 w-9 p-0 rounded-full cursor-pointer`}
               >
-                <span className="flex items-center justify-center w-full h-full">
+                <span className="flex items-center justify-center w-full h-full text-black dark:text-white">
                   {STATUS_ICONS[userStatus]}
                 </span>
               </Badge>
