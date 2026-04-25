@@ -100,7 +100,7 @@ export function UserAnimeListPage() {
                     title={item.status === 'watching' ? 'Смотрю' : item.status === 'completed' ? 'Просмотрено' : item.status === 'dropped' ? 'Брошено' : 'Запланировано'}
                     className={`h-9 w-9 p-0 rounded-full cursor-pointer ${item.status ? STATUS_COLORS[item.status as StatusType] : 'bg-gray-500'}`}
                   >
-                    <span className="flex items-center justify-center w-full h-full">
+                    <span className="flex items-center justify-center w-full h-full text-black dark:text-white">
                       {STATUS_ICONS[item.status as StatusType] || STATUS_ICONS.watching}
                     </span>
                   </Badge>
