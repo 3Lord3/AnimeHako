@@ -91,4 +91,10 @@
   button, [role="button"], a, [role="tab"], [data-slot="dropdown-menu-item"] {
     cursor: pointer;
   }
+  
+  /* FOUC prevention - use values from inline script, fallback to shadcn variables */
+  body {
+    background-color: var(--fouc-bg, oklch(var(--color-background))) !important;
+    color: var(--fouc-fg, oklch(var(--color-foreground))) !important;
+  }
 }
