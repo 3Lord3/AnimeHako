@@ -96,8 +96,19 @@ export function useUserAnimeList(status?: string, favorites?: boolean) {
   return useQuery({
     queryKey: ['user', 'anime', status, favorites],
     queryFn: async () => {
-      const { data } = await userApi.getAnimeList(status, favorites);
-      return data;
+      try {
+        const { data } = await userApi.getAnimeList(status, favorites);
+        return data;
+      } catch (error: unknown) {
+        // Return empty array on auth errors to prevent redirect on public pages
+        if (error && typeof error === 'object' && 'response' in error) {
+          const err = error as { response?: { status?: number } };
+          if (err.response?.status === 401) {
+            return [];
+          }
+        }
+        throw error;
+      }
     },
     enabled: !!user,
   });
