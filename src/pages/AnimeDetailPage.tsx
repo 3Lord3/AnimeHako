@@ -132,7 +132,7 @@ export function AnimeDetailPage() {
                   className="cursor-pointer text-foreground"
                   title={STATUS_LABELS[status]}
                 >
-                  <span className="text-white">
+                  <span className="text-black dark:text-white">
                     {STATUS_ICONS[status]}
                   </span>
                 </Button>
