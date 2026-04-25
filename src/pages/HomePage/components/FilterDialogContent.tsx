@@ -145,7 +145,7 @@ export function FilterDialogContent({
           className="cursor-pointer"
           onClick={onClearFilters}
         >
-          Очистить
+          Сбросить
         </Button>
         <Button
           size="sm"
