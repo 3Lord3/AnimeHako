@@ -50,8 +50,19 @@
 }
 
 @layer base {
+  html {
+    overflow-x: hidden;
+    overscroll-behavior: none;
+  }
+  
   * {
     border-color: oklch(var(--color-border));
+  }
+  
+  body {
+    background-color: oklch(var(--color-background));
+    color: oklch(var(--color-foreground));
+    overscroll-behavior: none;
   }
   
   /* Use border color for ring elements too */
