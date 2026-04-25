@@ -12,6 +12,7 @@ const HomePage = lazy(() => import('@/pages/HomePage').then(m => ({ default: m.H
 const AnimeDetailPage = lazy(() => import('@/pages/AnimeDetailPage').then(m => ({ default: m.AnimeDetailPage })));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
 const UserAnimeListPage = lazy(() => import('@/pages/UserAnimeListPage').then(m => ({ default: m.UserAnimeListPage })));
+const AnimeMatcherPage = lazy(() => import('@/pages/AnimeMatcherPage').then(m => ({ default: m.AnimeMatcherPage })));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { data: user, isLoading } = useUser();
@@ -43,6 +44,7 @@ export function App() {
                 <UserAnimeListPage />
               </ProtectedRoute>
             } />
+            <Route path="matcher" element={<AnimeMatcherPage />} />
           </Route>
         </Routes>
       </Suspense>

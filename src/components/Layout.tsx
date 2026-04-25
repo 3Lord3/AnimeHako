@@ -39,6 +39,14 @@ export function Layout() {
             >
               Каталог
             </Link>
+            <Link
+              to="/matcher"
+              className={`hover:text-primary transition-colors ${
+                location.pathname === '/matcher' ? 'text-primary font-medium' : ''
+              }`}
+            >
+              AniMatch
+            </Link>
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger>

@@ -78,6 +78,9 @@ export const animeApi = {
   getDetail: (id: number) =>
     api.get<AnimeDetail>(`/api/v1/anime/${id}`),
   
+  getRandom: () =>
+    api.get<AnimeDetail>('/api/v1/anime/random'),
+  
   getScreenshots: (id: number) =>
     api.get<ScreenshotsResponse>(`/api/v1/anime/${id}/screenshots`),
   

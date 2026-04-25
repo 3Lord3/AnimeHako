@@ -36,6 +36,18 @@ export function useAnimeDetail(id: number) {
   });
 }
 
+export function useRandomAnime() {
+  return useQuery({
+    queryKey: ['anime', 'random'],
+    queryFn: async () => {
+      const { data } = await animeApi.getRandom();
+      return data;
+    },
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+}
+
 export function useAnimeScreenshots(id: number) {
   return useQuery({
     queryKey: ['anime', 'screenshots', id],
