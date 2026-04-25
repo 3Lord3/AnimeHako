@@ -40,7 +40,7 @@ export function AnimeCard({ anime, showRating = true, userStatus, isFavorite }: 
             )}
             {isFavorite && (
               <Badge title="Избранное" className="bg-pink-500 h-9 w-9 p-0 rounded-full cursor-pointer">
-                <span className="flex items-center justify-center w-full h-full">
+                <span className="flex items-center justify-center w-full h-full text-white">
                   {FAVORITE_ICON}
                 </span>
               </Badge>

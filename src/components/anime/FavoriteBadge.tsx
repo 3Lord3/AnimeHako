@@ -14,7 +14,7 @@ export function FavoriteBadge({ size = 'md' }: FavoriteBadgeProps) {
 
   return (
     <Badge title="Избранное" className={`bg-pink-500 ${sizeClasses[size]} p-0 rounded-full cursor-pointer`}>
-      <span className="flex items-center justify-center w-full h-full">
+      <span className="flex items-center justify-center w-full h-full text-white">
         {FAVORITE_ICON}
       </span>
     </Badge>

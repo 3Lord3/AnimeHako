@@ -106,7 +106,7 @@ export function UserAnimeListPage() {
                   </Badge>
                   {item.is_favorite && (
                     <Badge title="Избранное" className="bg-pink-500 text-white h-9 w-9 p-0 rounded-full cursor-pointer">
-                      <span className="flex items-center justify-center w-full h-full">
+                      <span className="flex items-center justify-center w-full h-full text-white">
                         {FAVORITE_ICON}
                       </span>
                     </Badge>
