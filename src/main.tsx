@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import './index.css'
 import { App } from './App'
+import { useTheme } from '@/hooks'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,11 +16,17 @@ const queryClient = new QueryClient({
   },
 })
 
+function ThemeInitializer() {
+  useTheme(); // Initialize theme on app mount
+  return null;
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <TooltipProvider>
+          <ThemeInitializer />
           <App />
         </TooltipProvider>
       </BrowserRouter>
