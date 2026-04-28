@@ -29,5 +29,5 @@
     /* Ignore deprecations */
     "ignoreDeprecations": "6.0"
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts", "vitest.config.ts"]
 }

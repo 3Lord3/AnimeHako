@@ -25,34 +25,41 @@ function storeTheme(theme: Theme): void {
 
 export function useTheme() {
   const [theme, setThemeState] = useState<Theme>(getStoredTheme);
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(() => 
-    theme === 'system' ? getSystemTheme() : theme
-  );
 
+  // Compute resolved theme based on current theme setting
+  const [resolvedTheme, setResolvedTheme] = useState<'light'|'dark'>(() => {
+    return theme === 'system' ? getSystemTheme() : theme;
+  });
+
+  // Update resolvedTheme when theme changes
   useLayoutEffect(() => {
+    const newResolvedTheme = theme === 'system' ? getSystemTheme() : theme;
+    setResolvedTheme(newResolvedTheme);
+  }, [theme]);
+
+  // Listen for system preference changes when theme is 'system'
+  useLayoutEffect(() => {
+    if (theme !== 'system') return;
+
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     
     const handleChange = () => {
-      if (theme === 'system') {
-        setResolvedTheme(getSystemTheme());
-      }
+      setResolvedTheme(getSystemTheme());
     };
 
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, [theme]);
 
+  // Apply theme to document - useLayoutEffect but without setState
   useLayoutEffect(() => {
-    const resolved = theme === 'system' ? getSystemTheme() : theme;
-    setResolvedTheme(resolved);
-    
     const root = document.documentElement;
-    if (resolved === 'dark') {
+    if (resolvedTheme === 'dark') {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
     }
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const setTheme = useCallback((newTheme: Theme) => {
     setThemeState(newTheme);

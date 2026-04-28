@@ -5,13 +5,16 @@ interface AnimeGridProps {
   anime: AnimeListItem[];
   userAnimeList?: UserAnimeResponse[];
   isLoading?: boolean;
+  skeletonCount?: number;
 }
 
-export function AnimeGrid({ anime, userAnimeList, isLoading }: AnimeGridProps) {
+export function AnimeGrid({ anime, userAnimeList, isLoading, skeletonCount }: AnimeGridProps) {
   if (isLoading) {
+    const skeletonItems = skeletonCount ?? 10;
+    
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {Array.from({ length: 10 }).map((_, i) => (
+        {Array.from({ length: skeletonItems }).map((_, i) => (
           <div key={i} className="aspect-[3/4] rounded-lg bg-muted animate-pulse" />
         ))}
       </div>

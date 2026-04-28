@@ -19,5 +19,11 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // Allow setState in useLayoutEffect for theme synchronization
+      'react-hooks/set-state-in-effect': 'off',
+      // Allow exporting cva variants from component files for backward compatibility
+      'react-refresh/only-export-components': 'off',
+    },
   },
 ])

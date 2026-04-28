@@ -195,12 +195,14 @@ function SwipeCard({ anime, onSwipe, isActive }: SwipeCardProps) {
 export function AnimeMatcherPage() {
   const navigate = useNavigate();
   const { data: user } = useUser();
-  const [currentAnime, setCurrentAnime] = useState<AnimeDetail | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   
   const { data: anime, isLoading, refetch } = useRandomAnime();
   const { mutate: addToList, isPending: isAdding } = useAddToList();
+
+  // Use anime directly as currentAnime - no need for separate state
+  const currentAnime = anime ?? null;
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -208,12 +210,6 @@ export function AnimeMatcherPage() {
       navigate('/login');
     }
   }, [user, isLoading, navigate]);
-
-  useEffect(() => {
-    if (anime) {
-      setCurrentAnime(anime);
-    }
-  }, [anime]);
 
   const handleSwipe = (direction: 'left' | 'right') => {
     if (isTransitioning) return;

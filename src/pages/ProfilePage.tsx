@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUser, useUpdateProfile } from '@/hooks';
 import { Button } from '@/components/ui/button';
@@ -11,15 +11,8 @@ export function ProfilePage() {
   const { data: user, isLoading } = useUser();
   const { mutate: updateProfile } = useUpdateProfile();
 
-  const [username, setUsername] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-
-  // Initialize username when user data is available
-  useEffect(() => {
-    if (user?.username && !isEditing) {
-      setUsername(user.username);
-    }
-  }, [user?.username, isEditing]);
+  const [editUsername, setEditUsername] = useState('');
 
   if (isLoading) {
     return <ProfilePageSkeleton />;
@@ -36,9 +29,15 @@ export function ProfilePage() {
     );
   }
 
+  const handleStartEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setEditUsername(user.username);
+    setIsEditing(true);
+  };
+
   const handleUpdateProfile = () => {
     updateProfile(
-      { username },
+      { username: editUsername },
       {
         onSuccess: () => {
           setIsEditing(false);
@@ -62,8 +61,8 @@ export function ProfilePage() {
               {isEditing ? (
                 <div className="flex gap-2">
                   <Input
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={editUsername}
+                    onChange={(e) => setEditUsername(e.target.value)}
                     placeholder="Имя пользователя"
                   />
                   <Button onClick={handleUpdateProfile}>Сохранить</Button>
@@ -78,7 +77,7 @@ export function ProfilePage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setIsEditing(true)}
+                    onClick={handleStartEdit}
                     className="mt-2"
                   >
                     Изменить имя
