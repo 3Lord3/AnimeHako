@@ -1,83 +1,73 @@
-import { useMemo } from 'react';
 import { Trophy, Swords } from 'lucide-react';
-import type { TournamentMatch as TournamentMatchType } from '@/hooks/useTournament';
+import type { Round, TournamentParticipant } from '@/hooks/useTournament';
 import { cn } from '@/lib/utils';
 
 interface TournamentBracketProps {
-  matches: TournamentMatchType[];
-  currentRound: number;
-  totalRounds: number;
+  rounds: Round[];
+  currentRoundIndex: number;
   roundStarted: boolean;
 }
 
-export function TournamentBracket({ matches, currentRound, totalRounds, roundStarted }: TournamentBracketProps) {
+export function TournamentBracket({ rounds, currentRoundIndex, roundStarted }: TournamentBracketProps) {
   console.log('[TournamentBracket] Render:', {
-    currentRound,
-    totalRounds,
+    currentRoundIndex,
+    roundsCount: rounds.length,
     roundStarted,
-    matchesCount: matches.length,
-    matchesByRound: matches.reduce((acc, m) => {
-      acc[m.round] = acc[m.round] || [];
-      acc[m.round].push({ id: m.id, p1: m.participant1?.anime?.title || null, p2: m.participant2?.anime?.title || null });
-      return acc;
-    }, {} as Record<number, {id: string, p1: string|null, p2: string|null}[]>)
+    rounds: rounds.map(r => ({
+      index: r.index,
+      pairsCount: r.pairs.length,
+      isComplete: r.isComplete,
+      pairs: r.pairs.map(p => ({
+        id: p.id,
+        participants: p.participants.map(pp => pp.anime.title),
+        winner: p.winner?.anime?.title || null,
+        status: p.status,
+      })),
+    })),
   });
   
-  const matchesByRound = useMemo(() => {
-    const grouped: Record<number, TournamentMatchType[]> = {};
-    matches.forEach(match => {
-      if (!grouped[match.round]) {
-        grouped[match.round] = [];
-      }
-      grouped[match.round].push(match);
-    });
-    Object.keys(grouped).forEach(round => {
-      grouped[Number(round)].sort((a, b) => a.matchNumber - b.matchNumber);
-    });
-    return grouped;
-  }, [matches]);
-  
-  const getRoundName = (round: number) => {
-    if (round === totalRounds) return 'Финал';
-    if (round === totalRounds - 1 && round >= 2) return 'Полуфинал';
-    if (round === totalRounds - 2 && round >= 2) return 'Четвертьфинал';
-    // For smaller brackets (like 4 participants with 2 rounds)
-    if (totalRounds === 2 && round === 1) return 'Полуфинал';
-    if (totalRounds === 3 && round === 1) return 'Четвертьфинал';
-    if (totalRounds === 3 && round === 2) return 'Полуфинал';
-    return `${round}/${Math.pow(2, round)} финала`;
+  const getRoundName = (roundIndex: number, totalRounds: number) => {
+    const displayRound = totalRounds - roundIndex;
+    if (displayRound === totalRounds) return 'Финал';
+    if (totalRounds === 2 && displayRound === 1) return 'Полуфинал';
+    if (totalRounds === 3 && displayRound === 1) return 'Четвертьфинал';
+    if (totalRounds === 3 && displayRound === 2) return 'Полуфинал';
+    if (displayRound === totalRounds - 1) return 'Полуфинал';
+    if (displayRound === totalRounds - 2) return 'Четвертьфинал';
+    return `${displayRound} раунд`;
   };
   
-  const getMatchSpacing = (round: number) => {
-    return Math.pow(2, round - 1) * 80;
+  const getMatchSpacing = (roundIndex: number) => {
+    return Math.pow(2, roundIndex) * 80;
   };
+  
+  const totalRounds = rounds.length;
   
   return (
     <div className="w-full overflow-x-auto pb-8">
       {/* Round headers */}
       <div className="flex justify-center gap-6 mb-6 min-w-max px-4">
-        {Array.from({ length: totalRounds }, (_, i) => {
-          const round = totalRounds - i;
-          const roundMatches = matchesByRound[round] || [];
-          const completedCount = roundMatches.filter(m => m.winner).length;
+        {rounds.map((round, idx) => {
+          const completedCount = round.pairs.filter(p => p.status === 'completed' || p.status === 'bye').length;
+          const isCurrentRound = idx === currentRoundIndex;
           
           return (
-            <div key={round} className="text-center min-w-[140px]">
+            <div key={round.index} className="text-center min-w-[140px]">
               <div className={cn(
                 "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium",
-                round === currentRound && roundStarted ? "bg-primary text-primary-foreground" : 
-                round === currentRound ? "bg-yellow-500 text-black font-bold" :
+                isCurrentRound && roundStarted ? "bg-primary text-primary-foreground" : 
+                isCurrentRound ? "bg-yellow-500 text-black font-bold" :
                 "bg-muted text-foreground"
               )}>
-                {round === totalRounds ? (
+                {idx === rounds.length - 1 ? (
                   <Trophy className="w-4 h-4 text-yellow-600" />
                 ) : (
                   <Swords className="w-4 h-4" />
                 )}
-                {getRoundName(round)}
+                {getRoundName(round.index, totalRounds)}
               </div>
               <div className="text-xs text-muted-foreground mt-1">
-                {completedCount}/{roundMatches.length}
+                {completedCount}/{round.pairs.length}
               </div>
             </div>
           );
@@ -86,31 +76,29 @@ export function TournamentBracket({ matches, currentRound, totalRounds, roundSta
       
       {/* Bracket visualization */}
       <div className="flex items-center justify-center gap-4 min-w-max px-4">
-        {Array.from({ length: totalRounds }, (_, i) => {
-          const round = totalRounds - i;
-          const roundMatches = matchesByRound[round] || [];
-          const isCurrentRound = round === currentRound;
-          const isPastRound = round < currentRound;
+        {rounds.map((round, roundIdx) => {
+          const isCurrentRound = roundIdx === currentRoundIndex;
+          const isPastRound = roundIdx < currentRoundIndex;
           
           return (
             <div 
-              key={round} 
+              key={round.index} 
               className="flex flex-col"
               style={{
-                gap: `${getMatchSpacing(round)}px`,
+                gap: `${getMatchSpacing(roundIdx)}px`,
                 justifyContent: 'space-around',
-                minHeight: round === 1 ? '300px' : `${Math.pow(2, round - 1) * 160}px`,
+                minHeight: roundIdx === 0 ? '300px' : `${Math.pow(2, roundIdx) * 160}px`,
               }}
             >
-              {roundMatches.map((match) => {
-                const isPlayable = isCurrentRound && roundStarted && !match.winner && match.participant1 && match.participant2;
-                const showMatch = isPastRound || isCurrentRound;
+              {round.pairs.map((pair) => {
+                const isPlayable = isCurrentRound && roundStarted && pair.status === 'playing' && !pair.winner;
+                const showPair = isPastRound || isCurrentRound;
                 
-                if (!showMatch) {
+                if (!showPair) {
                   // Future round - show placeholder
                   return (
                     <div 
-                      key={match.id}
+                      key={pair.id}
                       className="w-[140px] h-[70px] bg-muted/30 rounded-lg border-2 border-dashed border-border opacity-50"
                     />
                   );
@@ -118,26 +106,44 @@ export function TournamentBracket({ matches, currentRound, totalRounds, roundSta
                 
                 return (
                   <div 
-                    key={match.id}
+                    key={pair.id}
                     className={cn(
                       "w-[140px] transition-all duration-300",
-                      match.winner && "opacity-60",
+                      pair.winner && "opacity-60",
                       isPlayable && "ring-2 ring-primary ring-offset-2 ring-offset-background rounded-lg"
                     )}
                   >
-                    {match.participant1 && match.participant2 ? (
+                    {pair.status === 'bye' ? (
+                      <div className={cn(
+                        "bg-card rounded-lg shadow-md overflow-hidden ring-2 ring-yellow-500"
+                      )}>
+                        <PairSlot participant={pair.participants[0]} isWinner={true} isBye={true} />
+                        <div className="h-px bg-border" />
+                        <div className="h-[32px] flex items-center justify-center bg-yellow-500/20 text-xs text-yellow-600 font-medium">
+                          BYE
+                        </div>
+                      </div>
+                    ) : pair.participants.length === 2 ? (
                       <div className={cn(
                         "bg-card rounded-lg shadow-md overflow-hidden",
-                        match.winner && "ring-2 ring-green-500"
+                        pair.winner && "ring-2 ring-green-500"
                       )}>
-                        <MatchSlot participant={match.participant1} isWinner={match.winner?.id === match.participant1.id} />
+                        <PairSlot 
+                          participant={pair.participants[0]} 
+                          isWinner={pair.winner?.id === pair.participants[0].id} 
+                          isBye={false}
+                        />
                         <div className="h-px bg-border" />
-                        <MatchSlot participant={match.participant2} isWinner={match.winner?.id === match.participant2.id} />
+                        <PairSlot 
+                          participant={pair.participants[1]} 
+                          isWinner={pair.winner?.id === pair.participants[1].id} 
+                          isBye={false}
+                        />
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        <MatchSlot participant={match.participant1} isWinner={!!match.winner} />
-                        <MatchSlot participant={match.participant2} isWinner={false} />
+                        <PairSlot participant={pair.participants[0]} isWinner={false} isBye={false} />
+                        <PairSlot participant={null} isWinner={false} isBye={false} />
                       </div>
                     )}
                   </div>
@@ -151,12 +157,13 @@ export function TournamentBracket({ matches, currentRound, totalRounds, roundSta
   );
 }
 
-interface MatchSlotProps {
-  participant: TournamentMatchType['participant1'];
+interface PairSlotProps {
+  participant: TournamentParticipant | null;
   isWinner: boolean;
+  isBye: boolean;
 }
 
-function MatchSlot({ participant, isWinner }: MatchSlotProps) {
+function PairSlot({ participant, isWinner, isBye }: PairSlotProps) {
   if (!participant) {
     return (
       <div className="h-[32px] bg-muted/30 rounded border border-dashed border-border" />
@@ -175,6 +182,7 @@ function MatchSlot({ participant, isWinner }: MatchSlotProps) {
       </div>
       <span className="text-xs font-medium truncate flex-1 text-foreground">{participant.anime.title}</span>
       {isWinner && <span className="text-green-500 text-sm">✓</span>}
+      {isBye && <span className="text-yellow-500 text-xs">B</span>}
     </div>
   );
 }

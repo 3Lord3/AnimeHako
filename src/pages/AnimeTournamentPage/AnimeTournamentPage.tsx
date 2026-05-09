@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useUserAnimeList } from '@/hooks';
-import { useTournament } from '@/hooks/useTournament';
+import { useTournament, type Pair } from '@/hooks/useTournament';
 import { TournamentIntro } from './components/TournamentIntro';
 import { TournamentMatch } from './components/TournamentMatch';
 import { TournamentResults } from './components/TournamentResults';
@@ -8,12 +8,11 @@ import { TournamentBracket } from './components/TournamentBracket';
 import { SuspenseFallback } from '@/components/SuspenseFallback';
 import { Swords, Target, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import type { TournamentMatch as TournamentMatchType } from '@/hooks/useTournament';
 
 export function AnimeTournamentPage() {
   const [isStarted, setIsStarted] = useState(false);
-  const [activeMatch, setActiveMatch] = useState<TournamentMatchType | null>(null);
-  const [matchQueue, setMatchQueue] = useState<TournamentMatchType[]>([]);
+  const [activePair, setActivePair] = useState<Pair | null>(null);
+  const [pairQueue, setPairQueue] = useState<Pair[]>([]);
   const { data: completedList, isLoading } = useUserAnimeList('completed');
   const { 
     tournament, 
@@ -27,47 +26,65 @@ export function AnimeTournamentPage() {
   const completedAnime = completedList?.map(item => item.anime) || [];
   
   const handleStart = () => {
-    if (completedAnime.length >= 4) {
+    if (completedAnime.length >= 2) {
       initializeTournament(completedAnime);
       setIsStarted(true);
-      setMatchQueue([]);
-      setActiveMatch(null);
+      setPairQueue([]);
+      setActivePair(null);
     }
   };
   
   const handleRestart = () => {
     resetTournament();
     setIsStarted(false);
-    setActiveMatch(null);
-    setMatchQueue([]);
+    setActivePair(null);
+    setPairQueue([]);
   };
   
-  const handleSelectWinner = (matchId: string, winnerId: string) => {
-    selectWinner(matchId, winnerId);
-    setActiveMatch(null);
+  const handleSelectWinner = (pairId: string, winnerId: string) => {
+    selectWinner(pairId, winnerId);
+    setActivePair(null);
     
-    // After selecting winner, if there are more matches in queue, open next
-    if (matchQueue.length > 0) {
-      const nextMatch = matchQueue[0];
-      setMatchQueue(prev => prev.slice(1));
-      setActiveMatch(nextMatch);
+    // After selecting winner, if there are more pairs in queue, open next
+    if (pairQueue.length > 0) {
+      const nextPair = pairQueue[0];
+      setPairQueue(prev => prev.slice(1));
+      setActivePair(nextPair);
     }
   };
   
   const handleStartRound = () => {
     if (!tournament) return;
-    
     startRound();
-    
-    // Build queue of all matches in this round that need to be played
-    const roundMatches = tournament.matches.filter(m => m.round === tournament.currentRound);
-    const playableMatches = roundMatches.filter(m => m.participant1 && m.participant2 && !m.winner);
-    
-    if (playableMatches.length > 0) {
-      setMatchQueue(playableMatches.slice(1)); // All except first
-      setActiveMatch(playableMatches[0]); // Open first immediately
-    }
   };
+  
+  // Effect to handle round started - runs after tournament state updates
+  useEffect(() => {
+    if (!tournament || !tournament.roundStarted) return;
+    
+    // Build queue of all pairs in this round that need to be played
+    const currentRound = tournament.rounds[tournament.currentRoundIndex];
+    console.log('[AnimeTournamentPage] useEffect handleStartRound:', {
+      currentRoundIndex: tournament.currentRoundIndex,
+      pairsCount: currentRound.pairs.length,
+      pairs: currentRound.pairs.map(p => ({
+        id: p.id,
+        participants: p.participants.map(pp => pp.anime.title),
+        status: p.status,
+        winner: p.winner?.anime?.title || null,
+      })),
+    });
+    
+    const playablePairs = currentRound.pairs.filter(
+      p => p.status === 'playing' && !p.winner && p.participants.length === 2
+    );
+    console.log('[AnimeTournamentPage] playablePairs:', playablePairs.length, playablePairs.map(p => p.id));
+    
+    if (playablePairs.length > 0) {
+      setPairQueue(playablePairs.slice(1)); // All except first
+      setActivePair(playablePairs[0]); // Open first immediately
+    }
+  }, [tournament?.roundStarted, tournament?.currentRoundIndex]);
   
   // Show loading
   if (isLoading) {
@@ -104,22 +121,36 @@ export function AnimeTournamentPage() {
     );
   }
   
-  // Active match - full screen view
-  if (activeMatch) {
-    const roundMatches = tournament?.matches.filter(m => m.round === tournament.currentRound) || [];
-    const currentMatchIdx = roundMatches.findIndex(m => m.id === activeMatch.id);
-    const totalInRound = roundMatches.length;
+  // Active pair - full screen view
+  if (activePair) {
+    const currentRound = tournament?.rounds[tournament.currentRoundIndex];
+    const currentPairIdx = currentRound?.pairs.findIndex(p => p.id === activePair.id) ?? 0;
+    const totalInRound = currentRound?.pairs.filter(p => p.participants.length === 2).length ?? 0;
+    const totalRounds = tournament?.rounds.length ?? 1;
+    const currentRoundDisplay = tournament?.currentRoundIndex ?? 0;
+    
+    // Convert Pair to a format TournamentMatch can use
+    // TournamentMatch expects participant1 and participant2, we have participants array
+    const match = {
+      id: activePair.id,
+      round: currentRoundDisplay + 1,
+      matchNumber: currentPairIdx + 1,
+      participant1: activePair.participants[0] || null,
+      participant2: activePair.participants[1] || null,
+      winner: activePair.winner,
+      nextMatchId: null,
+    };
     
     return (
       <div className="fixed inset-0 z-50 bg-background">
         <TournamentMatch
-          match={activeMatch}
-          roundNumber={tournament?.currentRound || 1}
-          totalRounds={tournament?.totalRounds || 1}
+          match={match}
+          roundNumber={currentRoundDisplay + 1}
+          totalRounds={totalRounds}
           onSelectWinner={handleSelectWinner}
           onBack={undefined}
           isActive={true}
-          matchIndex={currentMatchIdx >= 0 ? currentMatchIdx : 0}
+          matchIndex={currentPairIdx}
           totalMatchesInRound={totalInRound}
         />
       </div>
@@ -127,19 +158,21 @@ export function AnimeTournamentPage() {
   }
   
   // Show bracket with start round button
-  const getRoundName = (round: number, total: number) => {
-    if (round === total) return 'Финал';
-    if (total === 2 && round === 1) return 'Полуфинал';
-    if (total === 3 && round === 1) return 'Четвертьфинал';
-    if (total === 3 && round === 2) return 'Полуфинал';
-    if (round === total - 1) return 'Полуфинал';
-    if (round === total - 2) return 'Четвертьфинал';
-    return `${round}/${Math.pow(2, round)} финала`;
+  const getRoundName = (roundIndex: number, total: number) => {
+    const displayRound = total - roundIndex;
+    if (displayRound === total) return 'Финал';
+    if (total === 2 && displayRound === 1) return 'Полуфинал';
+    if (total === 3 && displayRound === 1) return 'Четвертьфинал';
+    if (total === 3 && displayRound === 2) return 'Полуфинал';
+    if (displayRound === total - 1) return 'Полуфинал';
+    if (displayRound === total - 2) return 'Четвертьфинал';
+    return `${displayRound} раунд`;
   };
   
-  const allRoundMatches = tournament?.matches.filter(m => m.round === tournament.currentRound) || [];
-  const completedMatches = allRoundMatches.filter(m => m.winner).length;
-  const pendingMatches = allRoundMatches.filter(m => !m.winner && m.participant1 && m.participant2).length;
+  const currentRound = tournament?.rounds[tournament.currentRoundIndex];
+  const allRoundPairs = currentRound?.pairs || [];
+  const completedPairs = allRoundPairs.filter(p => p.status === 'completed' || p.status === 'bye').length;
+  const pendingPairs = allRoundPairs.filter(p => p.status === 'playing' && !p.winner && p.participants.length === 2).length;
   
   return (
     <div className="container mx-auto px-4 py-8">
@@ -152,7 +185,7 @@ export function AnimeTournamentPage() {
         <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
           <span className="flex items-center gap-1">
             <Target className="w-4 h-4" />
-            {getRoundName(tournament?.currentRound || 1, tournament?.totalRounds || 1)}
+            {getRoundName(tournament?.currentRoundIndex || 0, tournament?.rounds.length || 1)}
           </span>
           <span>•</span>
           <span>{completedAnime.length} участников</span>
@@ -163,9 +196,8 @@ export function AnimeTournamentPage() {
       {tournament && (
         <>
           <TournamentBracket
-            matches={tournament.matches}
-            currentRound={tournament.currentRound}
-            totalRounds={tournament.totalRounds}
+            rounds={tournament.rounds}
+            currentRoundIndex={tournament.currentRoundIndex}
             roundStarted={tournament.roundStarted}
           />
           
@@ -178,15 +210,27 @@ export function AnimeTournamentPage() {
                 className="gap-2 text-lg px-8 py-6 bg-gradient-to-r from-primary to-yellow-500 hover:from-primary/90 hover:to-yellow-500/90 text-white font-semibold"
               >
                 <Play className="w-5 h-5" />
-                Начать {getRoundName(tournament.currentRound, tournament.totalRounds).toLowerCase()}
+                Начать {getRoundName(tournament.currentRoundIndex, tournament.rounds.length).toLowerCase()}
               </Button>
             </div>
           )}
           
           {/* Round progress */}
-          {tournament.roundStarted && allRoundMatches.length > 0 && (
-            <div className="text-center mt-4 text-muted-foreground">
-              {completedMatches} из {allRoundMatches.length} матчей завершено
+          {tournament.roundStarted && allRoundPairs.length > 0 && (
+            <div className="text-center mt-4">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
+                <span className="text-sm">
+                  {completedPairs}/{allRoundPairs.length} пар определено
+                </span>
+                {pendingPairs > 0 && (
+                  <>
+                    <span className="text-muted-foreground">•</span>
+                    <span className="text-sm font-medium text-primary">
+                      {pendingPairs} в процессе
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
           )}
         </>

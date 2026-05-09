@@ -29,15 +29,6 @@ export function TournamentMatch({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   
-  const roundNames: Record<number, string> = {
-    1: '1/8 финала',
-    2: 'Четвертьфинал',
-    3: 'Полуфинал',
-    4: 'Финал',
-    5: '1/16 финала',
-    6: '1/32 финала',
-  };
-  
   const getRoundName = (round: number, total: number) => {
     if (round === total) return 'Финал';
     if (total === 2 && round === 1) return 'Полуфинал';
