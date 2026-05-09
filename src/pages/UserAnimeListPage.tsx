@@ -62,7 +62,7 @@ export function UserAnimeListPage() {
           <Button
             key={s}
             variant={statusParam === s ? 'default' : 'outline'}
-            className="text-foreground"
+            className={statusParam === s ? 'text-primary-foreground' : 'text-foreground'}
             onClick={() =>
               setSearchParams(statusParam === s ? {} : { status: s })
             }
@@ -72,7 +72,7 @@ export function UserAnimeListPage() {
         ))}
         <Button
           variant={isFavorites ? 'default' : 'outline'}
-          className="text-foreground"
+          className={isFavorites ? 'text-primary-foreground' : 'text-foreground'}
           onClick={() => setSearchParams(isFavorites ? {} : { favorites: 'true' })}
         >
           Любимое
@@ -100,7 +100,7 @@ export function UserAnimeListPage() {
                     title={item.status === 'watching' ? 'Смотрю' : item.status === 'completed' ? 'Просмотрено' : item.status === 'dropped' ? 'Брошено' : 'Запланировано'}
                     className={`h-9 w-9 p-0 rounded-full cursor-pointer ${item.status ? STATUS_COLORS[item.status as StatusType] : 'bg-gray-500'}`}
                   >
-                    <span className="flex items-center justify-center w-full h-full text-black dark:text-white">
+                    <span className="flex items-center justify-center w-full h-full">
                       {STATUS_ICONS[item.status as StatusType] || STATUS_ICONS.watching}
                     </span>
                   </Badge>

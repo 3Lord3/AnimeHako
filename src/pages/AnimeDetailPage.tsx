@@ -130,10 +130,10 @@ export function AnimeDetailPage() {
                   variant={userAnime?.status === status ? 'default' : 'outline'}
                   size="icon"
                   onClick={() => handleAddToList(status)}
-                  className="cursor-pointer text-foreground"
+                  className="cursor-pointer"
                   title={STATUS_LABELS[status]}
                 >
-                  <span className="text-black dark:text-white">
+                  <span className={userAnime?.status === status ? 'text-white' : 'text-foreground'}>
                     {STATUS_ICONS[status]}
                   </span>
                 </Button>
