@@ -29,8 +29,7 @@ export function ProfilePage() {
     );
   }
 
-  const handleStartEdit = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleStartEdit = () => {
     setEditUsername(user.username);
     setIsEditing(true);
   };
