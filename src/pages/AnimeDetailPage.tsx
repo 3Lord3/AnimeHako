@@ -4,11 +4,12 @@ import { useUser } from '@/hooks';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Star, Calendar, Clock, Film, Heart, ArrowLeft } from 'lucide-react';
+import { Star, Calendar, Heart, ArrowLeft } from 'lucide-react';
 import { getImageUrl } from '@/lib/imageUrl';
 import { cn } from '@/lib/utils';
-import { STATUS_LABELS, STATUS_ICONS, SEASON_LABELS, ALL_STATUSES, type StatusType } from '@/types/constants';
+import { STATUS_LABELS, STATUS_ICONS, ALL_STATUSES, type StatusType } from '@/types/constants';
 import { AnimeDetailPageSkeleton } from '@/components/loaders/PageSkeletons';
+import { AnimeCharacteristics } from './AnimeDetailPage/components/AnimeCharacteristics';
 
 export function AnimeDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -83,7 +84,7 @@ export function AnimeDetailPage() {
             navigate('/');
           }
         }}
-        className="cursor-pointer"
+        className="cursor-pointer text-foreground hover:bg-muted"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />
         Назад
@@ -141,82 +142,26 @@ export function AnimeDetailPage() {
           )}
         </div>
         <div className="flex-1 space-y-4">
-          <h1 className="text-3xl font-bold text-foreground">{anime.title}</h1>
+          <h1 className="text-3xl font-bold text-foreground select-text">{anime.title}</h1>
           {anime.title_en && (
-            <p className="text-xl text-muted-foreground">{anime.title_en}</p>
+            <p className="text-xl text-muted-foreground select-text">{anime.title_en}</p>
           )}
           {anime.title_jp && (
-            <p className="text-lg text-muted-foreground">{anime.title_jp}</p>
+            <p className="text-lg text-muted-foreground select-text">{anime.title_jp}</p>
           )}
 
-          <div className="flex flex-wrap gap-2">
-            {anime.rating !== null && anime.rating !== undefined && !isNaN(Number(anime.rating)) && (
-              <Badge variant="outline" className="flex items-center gap-1">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                {typeof anime.rating === 'number' ? anime.rating.toFixed(1) : Number(anime.rating).toFixed(1)}
-              </Badge>
-            )}
-            {anime.year && anime.year > 0 && (
-              <Badge variant="outline" className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
-                {anime.year}
-              </Badge>
-            )}
-            {anime.season && (
-              <Badge variant="outline">
-                {SEASON_LABELS[anime.season] || anime.season}
-              </Badge>
-            )}
-            {anime.status && (
-              <Badge variant={anime.status === 'ongoing' ? 'default' : 'secondary'}>
-                {anime.status === 'ongoing' ? 'Онгоинг' : 'Завершено'}
-              </Badge>
-            )}
-            {anime.episodes && anime.episodes > 0 && (
-              <Badge variant="outline" className="flex items-center gap-1">
-                <Film className="w-4 h-4" />
-                {anime.episodes} эп.
-              </Badge>
-            )}
-            {anime.duration && anime.duration > 0 && (
-              <Badge variant="outline" className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
-                {anime.duration} мин.
-              </Badge>
-            )}
-          </div>
-
-          {anime.studio && (
-            <p>
-              <strong>Студия:</strong> {anime.studio}
-            </p>
-          )}
-
-          <div className="flex flex-wrap gap-2">
-            {anime.genres.map((genre) => (
-              <Badge key={genre} variant="secondary">
-                {genre}
-              </Badge>
-            ))}
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {anime.tags.map((tag) => (
-              <Badge key={tag} variant="outline">
-                {tag}
-              </Badge>
-            ))}
-          </div>
+          <AnimeCharacteristics anime={anime} />
         </div>
       </div>
 
+      {/* Description Section */}
       {anime.description && (
         <Card>
           <CardHeader>
-            <CardTitle>Описание</CardTitle>
+            <CardTitle className="select-text">Описание</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="whitespace-pre-wrap">{anime.description}</p>
+            <p className="whitespace-pre-wrap select-text">{anime.description}</p>
           </CardContent>
         </Card>
       )}
