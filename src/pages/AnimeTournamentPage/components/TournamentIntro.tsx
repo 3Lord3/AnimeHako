@@ -1,14 +1,25 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Play, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { TournamentParticipantSelector } from './TournamentParticipantSelector';
+import type { AnimeListItem } from '@/types';
 
 interface TournamentIntroProps {
-  animeCount: number;
-  onStart: () => void;
+  completedAnime: AnimeListItem[];
+  onStart: (selectedAnime: AnimeListItem[]) => void;
 }
 
-export function TournamentIntro({ animeCount, onStart }: TournamentIntroProps) {
-  const hasEnoughAnime = animeCount >= 4;
+export function TournamentIntro({ completedAnime, onStart }: TournamentIntroProps) {
+  const [selectedAnime, setSelectedAnime] = useState<AnimeListItem[]>([]);
+  
+  const hasEnoughAnime = selectedAnime.length >= 4;
+  
+  const handleStart = () => {
+    if (hasEnoughAnime) {
+      onStart(selectedAnime);
+    }
+  };
   
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
@@ -30,19 +41,19 @@ export function TournamentIntro({ animeCount, onStart }: TournamentIntroProps) {
         в напряжённой турнирной сетке.
       </p>
       
-      {/* Stats */}
-      <div className="mb-8 flex items-center gap-2 text-sm">
-        <span className="text-muted-foreground">Участников:</span>
-        <span className={`font-bold ${hasEnoughAnime ? 'text-green-500' : 'text-red-500'}`}>
-          {animeCount}
-        </span>
-        <span className="text-muted-foreground">/ минимум 4</span>
+      {/* Participant Selector */}
+      <div className="w-full max-w-2xl mb-8">
+        <TournamentParticipantSelector
+          completedAnime={completedAnime}
+          selectedAnime={selectedAnime}
+          onSelectionChange={setSelectedAnime}
+        />
       </div>
       
       {/* Button or message */}
       {hasEnoughAnime ? (
         <Button 
-          onClick={onStart}
+          onClick={handleStart}
           size="lg"
           className="gap-2 text-lg px-8 py-6 bg-gradient-to-r from-primary to-yellow-500 hover:from-primary/90 hover:to-yellow-500/90 text-white font-semibold"
         >
@@ -51,9 +62,11 @@ export function TournamentIntro({ animeCount, onStart }: TournamentIntroProps) {
         </Button>
       ) : (
         <div className="space-y-4">
-          <div className="flex items-center gap-2 text-red-400 bg-red-950/30 border border-red-500/30 px-4 py-3 rounded-lg">
-            <AlertCircle className="w-5 h-5 text-red-400" />
-            <span className="font-medium text-red-300">Добавьте несколько аниме в список просмотренного</span>
+          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/20 border border-amber-300 dark:border-amber-500/40 px-4 py-3 rounded-lg">
+            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <span className="font-medium text-amber-800 dark:text-amber-300">
+              Выберите минимум 4 аниме для участия в турнире
+            </span>
           </div>
           <Link to="/profile/anime">
             <Button variant="outline" size="lg" className="gap-2 text-foreground border-2 hover:bg-accent">

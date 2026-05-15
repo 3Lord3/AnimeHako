@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useUserAnimeList } from '@/hooks';
 import { useTournament, type Pair } from '@/hooks/useTournament';
+import type { AnimeListItem } from '@/types';
 import { TournamentIntro } from './components/TournamentIntro';
 import { TournamentMatch } from './components/TournamentMatch';
 import { TournamentResults } from './components/TournamentResults';
@@ -25,9 +26,9 @@ export function AnimeTournamentPage() {
   
   const completedAnime = completedList?.map(item => item.anime) || [];
   
-  const handleStart = () => {
-    if (completedAnime.length >= 2) {
-      initializeTournament(completedAnime);
+  const handleStart = (selectedAnime: AnimeListItem[]) => {
+    if (selectedAnime.length >= 4) {
+      initializeTournament(selectedAnime);
       setIsStarted(true);
       setPairQueue([]);
       setActivePair(null);
@@ -96,7 +97,7 @@ export function AnimeTournamentPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <TournamentIntro 
-          animeCount={completedAnime.length}
+          completedAnime={completedAnime}
           onStart={handleStart}
         />
       </div>
