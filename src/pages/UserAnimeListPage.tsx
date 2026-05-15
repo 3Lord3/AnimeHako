@@ -62,7 +62,7 @@ export function UserAnimeListPage() {
           <Button
             key={s}
             variant={statusParam === s ? 'default' : 'outline'}
-            className={statusParam === s ? 'text-primary-foreground' : 'text-foreground'}
+            className={statusParam === s ? 'text-white' : 'text-foreground'}
             onClick={() =>
               setSearchParams(statusParam === s ? {} : { status: s })
             }
@@ -72,7 +72,7 @@ export function UserAnimeListPage() {
         ))}
         <Button
           variant={isFavorites ? 'default' : 'outline'}
-          className={isFavorites ? 'text-primary-foreground' : 'text-foreground'}
+          className={isFavorites ? 'text-white' : 'text-foreground'}
           onClick={() => setSearchParams(isFavorites ? {} : { favorites: 'true' })}
         >
           Любимое
