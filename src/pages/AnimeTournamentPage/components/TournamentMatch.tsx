@@ -28,6 +28,7 @@ export function TournamentMatch({
 }: TournamentMatchProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [isSelecting, setIsSelecting] = useState(false);
   
   const getRoundName = (round: number, total: number) => {
     // round is 1-based (1 = first round, total = final)
@@ -46,11 +47,13 @@ export function TournamentMatch({
   useEffect(() => {
     setSelectedId(null);
     setShowResult(false);
+    setIsSelecting(false);
   }, [match.id]);
   
   const handleSelect = (participant: TournamentParticipant) => {
-    if (!isActive || match.winner || !participant) return;
+    if (!isActive || match.winner || isSelecting || !participant) return;
     
+    setIsSelecting(true);
     setSelectedId(participant.id);
     setShowResult(true);
     
@@ -108,7 +111,7 @@ export function TournamentMatch({
               anime={participant1.anime}
               isWinner={match.winner?.id === participant1.id}
               isEliminated={match.winner ? match.winner.id !== participant1.id : false}
-              onClick={isActive && !match.winner ? () => handleSelect(participant1) : undefined}
+              onClick={isActive && !match.winner && !isSelecting ? () => handleSelect(participant1) : undefined}
             />
             {selectedId === participant1.id && showResult && (
               <motion.div
@@ -137,7 +140,7 @@ export function TournamentMatch({
               anime={participant2.anime}
               isWinner={match.winner?.id === participant2.id}
               isEliminated={match.winner ? match.winner.id !== participant2.id : false}
-              onClick={isActive && !match.winner ? () => handleSelect(participant2) : undefined}
+              onClick={isActive && !match.winner && !isSelecting ? () => handleSelect(participant2) : undefined}
             />
             {selectedId === participant2.id && showResult && (
               <motion.div
