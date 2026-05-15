@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Search, X, Plus, Loader2 } from 'lucide-react';
+import { Search, X, Plus, Loader2, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAnimeList } from '@/hooks';
@@ -78,6 +78,10 @@ export function TournamentParticipantSelector({
     onSelectionChange(selectedAnime.filter((a) => a.id !== animeId));
   };
   
+  const handleClearAll = () => {
+    onSelectionChange([]);
+  };
+  
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!showDropdown || availableResults.length === 0) return;
     
@@ -151,7 +155,7 @@ export function TournamentParticipantSelector({
         {showDropdown && (
           <div
             ref={dropdownRef}
-            className="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border rounded-lg shadow-lg overflow-hidden max-h-64 overflow-y-auto"
+            className="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border rounded-lg shadow-lg overflow-hidden max-h-48 sm:max-h-64 overflow-y-auto"
           >
             {isSearching ? (
               <div className="flex items-center justify-center py-4 text-muted-foreground">
@@ -164,18 +168,16 @@ export function TournamentParticipantSelector({
                   <li key={anime.id}>
                     <button
                       onClick={() => handleAddFromSearch(anime)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 hover:bg-accent transition-colors text-left ${
-                        index === highlightedIndex ? 'bg-accent' : ''
-                      }`}
+                      className={`w-full flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 sm:py-2 hover:bg-accent transition-colors text-left active:bg-accent/80 ${index === highlightedIndex ? 'bg-accent' : ''}`}
                     >
                       <img
                         src={getImageUrl(anime.poster)}
                         alt={anime.title}
-                        className="w-10 h-14 object-cover rounded"
+                        className="w-8 h-11 sm:w-10 sm:h-14 object-cover rounded flex-shrink-0"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm text-[var(--color-foreground)] dark:text-[var(--color-foreground)] truncate">{anime.title}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="font-medium text-sm sm:text-sm text-foreground truncate">{anime.title}</p>
+                        <p className="text-xs text-muted-foreground truncate">
                           {anime.year || '—'} • {anime.genres?.slice(0, 2).join(', ') || '—'}
                         </p>
                       </div>
@@ -197,18 +199,31 @@ export function TournamentParticipantSelector({
         )}
       </div>
       
-      {/* Add All Button */}
-      <div className="flex items-center justify-between">
-        {selectedAnime.length < completedAnime.length ? (
-          <Button
-            variant="outline"
-            onClick={handleAddAllCompleted}
-            className="gap-2 text-foreground dark:text-foreground"
-          >
-            <Plus className="w-4 h-4" />
-            Добавить все просмотренные ({completedAnime.length - selectedAnime.length})
-          </Button>
-        ) : null}
+      {/* Add All Button & Clear Button */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 w-full">
+        <div className="flex flex-wrap items-center gap-2">
+          {selectedAnime.length < completedAnime.length ? (
+            <Button
+              variant="outline"
+              onClick={handleAddAllCompleted}
+              className="gap-2 text-foreground dark:text-foreground"
+            >
+              <Plus className="w-4 h-4" />
+              Добавить все просмотренные ({completedAnime.length - selectedAnime.length})
+            </Button>
+          ) : null}
+          
+          {selectedAnime.length > 0 && (
+            <Button
+              variant="ghost"
+              onClick={handleClearAll}
+              className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="w-4 h-4" />
+              Очистить
+            </Button>
+          )}
+        </div>
         
         {selectedAnime.length > 0 && (
           <span className="text-sm text-muted-foreground">
@@ -219,30 +234,29 @@ export function TournamentParticipantSelector({
       
       {/* Selected Anime Grid */}
       {selectedAnime.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-3 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-3">
           {selectedAnime.map((anime) => (
             <div
               key={anime.id}
-              className="relative group aspect-[3/4] rounded-lg overflow-hidden"
+              onClick={() => handleRemove(anime.id)}
+              className="relative group aspect-[2/3] rounded-lg overflow-hidden cursor-pointer"
             >
               <img
                 src={getImageUrl(anime.poster)}
                 alt={anime.title}
-                className="object-cover w-full h-full"
+                className="object-cover w-full h-full transition-all duration-200 group-hover:brightness-50"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-2">
-                <p className="text-xs font-medium text-white truncate">
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="w-8 h-8 bg-red-500/90 rounded-full flex items-center justify-center">
+                  <X className="w-4 h-4 text-white" />
+                </div>
+              </div>
+              <div className="absolute inset-x-0 bottom-0 p-1.5 sm:p-2">
+                <p className="text-[10px] sm:text-xs font-medium text-white truncate leading-tight">
                   {anime.title}
                 </p>
               </div>
-              <button
-                onClick={() => handleRemove(anime.id)}
-                className="absolute top-1 right-1 w-6 h-6 bg-black/60 hover:bg-red-500 rounded-full flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
-                title="Удалить из участников"
-              >
-                <X className="w-3 h-3 text-white" />
-              </button>
             </div>
           ))}
         </div>

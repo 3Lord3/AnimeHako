@@ -46,29 +46,29 @@ export function TournamentBracket({ rounds, currentRoundIndex, roundStarted }: T
   const totalRounds = rounds.length;
   
   return (
-    <div className="w-full overflow-x-auto pb-8">
-      {/* Round headers */}
-      <div className="flex justify-center gap-6 mb-6 min-w-max px-4">
+    <div className="w-full overflow-x-auto pb-8 px-2">
+      {/* Round headers - scrollable on mobile */}
+      <div className="flex justify-center gap-2 sm:gap-4 md:gap-6 mb-4 sm:mb-6 min-w-max px-2">
         {rounds.map((round, idx) => {
           const completedCount = round.pairs.filter(p => p.status === 'completed' || p.status === 'bye').length;
           const isCurrentRound = idx === currentRoundIndex;
           
           return (
-            <div key={round.index} className="text-center min-w-[140px]">
+            <div key={round.index} className="text-center min-w-[80px] sm:min-w-[100px] md:min-w-[140px]">
               <div className={cn(
-                "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium",
+                "inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium",
                 isCurrentRound && roundStarted ? "bg-primary text-primary-foreground" : 
                 isCurrentRound ? "bg-yellow-500 text-black font-bold" :
                 "bg-muted text-foreground"
               )}>
                 {idx === rounds.length - 1 ? (
-                  <Trophy className="w-4 h-4 text-yellow-600" />
+                  <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-600" />
                 ) : (
-                  <Swords className="w-4 h-4" />
+                  <Swords className="w-3 h-3 sm:w-4 sm:h-4" />
                 )}
                 {getRoundName(round.index, totalRounds)}
               </div>
-              <div className="text-xs text-muted-foreground mt-1">
+              <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">
                 {completedCount}/{round.pairs.length}
               </div>
             </div>
@@ -77,7 +77,7 @@ export function TournamentBracket({ rounds, currentRoundIndex, roundStarted }: T
       </div>
       
       {/* Bracket visualization */}
-      <div className="flex items-center justify-center gap-4 min-w-max px-4">
+      <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4 min-w-max px-2">
         {rounds.map((round, roundIdx) => {
           const isCurrentRound = roundIdx === currentRoundIndex;
           const isPastRound = roundIdx < currentRoundIndex;
@@ -100,7 +100,7 @@ export function TournamentBracket({ rounds, currentRoundIndex, roundStarted }: T
                   return (
                     <div 
                       key={pair.id}
-                      className="w-[140px] h-[70px] bg-muted/30 rounded-lg border-2 border-dashed border-border opacity-50"
+                      className="w-[80px] sm:w-[100px] md:w-[140px] h-[50px] sm:h-[60px] md:h-[70px] bg-muted/30 rounded-lg border-2 border-dashed border-border opacity-50"
                     />
                   );
                 }
@@ -109,7 +109,7 @@ export function TournamentBracket({ rounds, currentRoundIndex, roundStarted }: T
                   <div 
                     key={pair.id}
                     className={cn(
-                      "w-[140px] transition-all duration-300",
+                      "w-[80px] sm:w-[100px] md:w-[140px] transition-all duration-300",
                       pair.winner && "opacity-60",
                       isPlayable && "ring-2 ring-primary ring-offset-2 ring-offset-background rounded-lg"
                     )}
@@ -120,7 +120,7 @@ export function TournamentBracket({ rounds, currentRoundIndex, roundStarted }: T
                       )}>
                         <PairSlot participant={pair.participants[0]} isWinner={true} isBye={true} />
                         <div className="h-px bg-border" />
-                        <div className="h-[32px] flex items-center justify-center bg-yellow-500/20 text-xs text-yellow-600 font-medium">
+                        <div className="h-[22px] sm:h-[24px] md:h-[32px] flex items-center justify-center bg-yellow-500/20 text-[10px] sm:text-xs text-yellow-600 font-medium">
                           BYE
                         </div>
                       </div>
@@ -173,17 +173,17 @@ function PairSlot({ participant, isWinner, isBye }: PairSlotProps) {
   
   return (
     <div className={cn(
-      "h-[32px] flex items-center gap-1.5 px-2 py-1 bg-muted/50",
+      "h-[22px] sm:h-[24px] md:h-[32px] flex items-center gap-1 sm:gap-1.5 px-1 sm:px-2 py-0.5 sm:py-1 bg-muted/50",
       isWinner && "bg-green-500/20"
     )}>
-      <div className="w-5 h-6 rounded overflow-hidden bg-muted flex-shrink-0">
+      <div className="w-4 h-5 sm:w-5 sm:h-6 rounded overflow-hidden bg-muted flex-shrink-0">
         {participant.anime.poster && (
           <img src={participant.anime.poster} alt="" className="w-full h-full object-cover" />
         )}
       </div>
-      <span className="text-xs font-medium truncate flex-1 text-foreground">{participant.anime.title}</span>
+      <span className="text-[10px] sm:text-xs font-medium truncate flex-1 text-foreground">{participant.anime.title}</span>
       {isWinner && <span className="text-green-500 text-sm">✓</span>}
-      {isBye && <span className="text-yellow-500 text-xs">B</span>}
+      {isBye && <span className="text-yellow-500 text-[10px] sm:text-xs">B</span>}
     </div>
   );
 }

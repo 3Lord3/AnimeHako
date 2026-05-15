@@ -95,7 +95,7 @@ export function AnimeTournamentPage() {
   // Not started - show intro
   if (!isStarted) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         <TournamentIntro 
           completedAnime={completedAnime}
           onStart={handleStart}
@@ -108,10 +108,10 @@ export function AnimeTournamentPage() {
   if (tournament?.isComplete) {
     const results = getResults();
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">🏆 Турнир завершён!</h1>
-          <p className="text-muted-foreground">Поздравляем с определением победителя</p>
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">🏆 Турнир завершён!</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">Поздравляем с определением победителя</p>
         </div>
         <TournamentResults 
           participants={results}
@@ -177,16 +177,16 @@ export function AnimeTournamentPage() {
   const pendingPairs = allRoundPairs.filter(p => p.status === 'playing' && !p.winner && p.participants.length === 2).length;
   
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-2 flex items-center justify-center gap-2 text-foreground">
-          <Swords className="w-8 h-8" />
+      <div className="text-center mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 flex items-center justify-center gap-2 text-foreground">
+          <Swords className="w-6 h-6 sm:w-8 sm:h-8" />
           Anime Tournament
         </h1>
-        <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+        <div className="flex items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
           <span className="flex items-center gap-1">
-            <Target className="w-4 h-4" />
+            <Target className="w-3 h-3 sm:w-4 sm:h-4" />
             {getRoundName(tournament?.currentRoundIndex || 0, tournament?.rounds.length || 1)}
           </span>
           <span>•</span>
@@ -205,13 +205,13 @@ export function AnimeTournamentPage() {
           
           {/* Start Round button */}
           {!tournament.roundStarted && (
-            <div className="text-center mt-8">
+            <div className="text-center mt-6 sm:mt-8">
               <Button 
                 onClick={handleStartRound}
                 size="lg"
-                className="gap-2 text-lg px-8 py-6 bg-gradient-to-r from-primary to-yellow-500 hover:from-primary/90 hover:to-yellow-500/90 text-white font-semibold"
+                className="gap-2 text-base sm:text-lg px-6 py-4 sm:px-8 sm:py-6 bg-gradient-to-r from-primary to-yellow-500 hover:from-primary/90 hover:to-yellow-500/90 text-white font-semibold"
               >
-                <Play className="w-5 h-5" />
+                <Play className="w-4 h-4 sm:w-5 sm:h-5" />
                 Начать {getRoundName(tournament.currentRoundIndex, tournament.rounds.length).toLowerCase()}
               </Button>
             </div>
@@ -219,15 +219,15 @@ export function AnimeTournamentPage() {
           
           {/* Round progress */}
           {tournament.roundStarted && allRoundPairs.length > 0 && (
-            <div className="text-center mt-4">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted">
-                <span className="text-sm">
+            <div className="text-center mt-4 sm:mt-4">
+              <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-muted">
+                <span className="text-xs sm:text-sm">
                   {completedPairs}/{allRoundPairs.length} пар определено
                 </span>
                 {pendingPairs > 0 && (
                   <>
                     <span className="text-muted-foreground">•</span>
-                    <span className="text-sm font-medium text-primary">
+                    <span className="text-xs sm:text-sm font-medium text-primary">
                       {pendingPairs} в процессе
                     </span>
                   </>

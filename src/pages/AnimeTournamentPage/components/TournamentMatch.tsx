@@ -72,35 +72,35 @@ export function TournamentMatch({
   return (
     <div className="w-full h-full flex flex-col bg-background">
       {/* Header with back button */}
-      <div className="flex items-center justify-between p-4 border-b border-border bg-card">
+      <div className="flex items-center justify-between p-2 sm:p-3 md:p-4 border-b border-border bg-card">
         {onBack && (
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-1 sm:gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm"
           >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Назад</span>
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Назад</span>
           </button>
         )}
-        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted text-sm font-medium">
+        <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full bg-muted text-xs sm:text-sm font-medium">
           {roundNumber === totalRounds ? (
-            <Trophy className="w-4 h-4 text-yellow-500" />
+            <Trophy className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
           ) : (
-            <Swords className="w-4 h-4" />
+            <Swords className="w-3 h-3 sm:w-4 sm:h-4" />
           )}
           {roundName}
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground hidden sm:inline">
             ({matchIndex + 1}/{totalMatchesInRound})
           </span>
         </div>
-        <div className="w-20" />
+        <div className="w-16 sm:w-20" />
       </div>
       
       {/* Match container */}
-      <div className="flex-1 flex items-center justify-center p-4">
+      <div className="flex-1 flex items-center justify-center p-1 sm:p-2 md:p-4">
         <div className={cn(
-          "w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8",
-          isActive && "ring-2 ring-primary/20 rounded-2xl p-4"
+          "w-full max-w-lg sm:max-w-xl md:max-w-4xl grid grid-cols-1 gap-2 sm:gap-4 md:grid-cols-2 md:gap-8",
+          isActive && "ring-2 ring-primary/20 rounded-2xl p-1 sm:p-2 md:p-4"
         )}>
           {/* Participant 1 */}
           <motion.div
@@ -112,6 +112,7 @@ export function TournamentMatch({
               isWinner={match.winner?.id === participant1.id}
               isEliminated={match.winner ? match.winner.id !== participant1.id : false}
               onClick={isActive && !match.winner && !isSelecting ? () => handleSelect(participant1) : undefined}
+              compact
             />
             {selectedId === participant1.id && showResult && (
               <motion.div
@@ -119,15 +120,15 @@ export function TournamentMatch({
                 animate={{ opacity: 1, scale: 1 }}
                 className="absolute inset-0 flex items-center justify-center bg-green-500/30 rounded-xl"
               >
-                <span className="text-white font-bold text-3xl drop-shadow-lg">✓</span>
+                <span className="text-white font-bold text-2xl sm:text-3xl drop-shadow-lg">✓</span>
               </motion.div>
             )}
           </motion.div>
           
-          {/* VS indicator */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 md:block hidden">
-            <div className="bg-background/90 rounded-full p-4 shadow-lg">
-              <span className="text-3xl font-black text-primary">VS</span>
+          {/* VS indicator - Desktop only */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 hidden md:block">
+            <div className="bg-background/90 rounded-full p-2 sm:p-4 shadow-lg">
+              <span className="text-2xl sm:text-3xl font-black text-primary">VS</span>
             </div>
           </div>
           
@@ -141,6 +142,7 @@ export function TournamentMatch({
               isWinner={match.winner?.id === participant2.id}
               isEliminated={match.winner ? match.winner.id !== participant2.id : false}
               onClick={isActive && !match.winner && !isSelecting ? () => handleSelect(participant2) : undefined}
+              compact
             />
             {selectedId === participant2.id && showResult && (
               <motion.div
@@ -148,7 +150,7 @@ export function TournamentMatch({
                 animate={{ opacity: 1, scale: 1 }}
                 className="absolute inset-0 flex items-center justify-center bg-green-500/30 rounded-xl"
               >
-                <span className="text-white font-bold text-3xl drop-shadow-lg">✓</span>
+                <span className="text-white font-bold text-2xl sm:text-3xl drop-shadow-lg">✓</span>
               </motion.div>
             )}
           </motion.div>
@@ -156,9 +158,9 @@ export function TournamentMatch({
       </div>
       
       {/* Mobile VS indicator */}
-      <div className="md:hidden flex justify-center py-4">
-        <div className="bg-muted rounded-full px-6 py-2">
-          <span className="text-xl font-black text-primary">VS</span>
+      <div className="md:hidden flex justify-center py-2 sm:py-4">
+        <div className="bg-muted rounded-full px-4 sm:px-6 py-1.5 sm:py-2">
+          <span className="text-lg sm:text-xl font-black text-primary">VS</span>
         </div>
       </div>
     </div>
