@@ -97,8 +97,7 @@ export function useUserAnimeList(status?: string, favorites?: boolean) {
     queryKey: ['user', 'anime', status, favorites],
     queryFn: async () => {
       try {
-        // Only pass favorites parameter if it's explicitly true (not false/undefined)
-        const { data } = await userApi.getAnimeList(status, favorites === true ? true : undefined);
+        const { data } = await userApi.getAnimeList(status, favorites || undefined);
         return data;
       } catch (error: unknown) {
         // Return empty array on auth errors to prevent redirect on public pages

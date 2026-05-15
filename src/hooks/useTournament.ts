@@ -9,17 +9,6 @@ export interface TournamentParticipant {
   finalPosition: number | null;
 }
 
-// Compatibility alias for Pair (used by TournamentMatch component)
-export interface TournamentMatch {
-  id: string;
-  round: number;
-  matchNumber: number;
-  participant1: TournamentParticipant | null;
-  participant2: TournamentParticipant | null;
-  winner: TournamentParticipant | null;
-  nextMatchId: string | null;
-}
-
 export interface Pair {
   id: string;
   roundIndex: number;
@@ -28,6 +17,9 @@ export interface Pair {
   winner: TournamentParticipant | null;
   status: 'pending' | 'bye' | 'playing' | 'completed';
 }
+
+// Compatibility alias for TournamentMatch (used by TournamentMatch component)
+export interface TournamentMatch extends Pair {}
 
 export interface Round {
   index: number;
@@ -99,7 +91,6 @@ function createPairsForRound(
  */
 function buildTournamentRounds(animeList: AnimeListItem[]): Round[] {
   const shuffled = shuffleArray(animeList);
-  console.log('[buildTournamentRounds] Starting with', shuffled.length, 'anime');
   
   const participants: TournamentParticipant[] = shuffled.map((anime, index) => ({
     id: `participant-${anime.id}`,
@@ -115,16 +106,6 @@ function buildTournamentRounds(animeList: AnimeListItem[]): Round[] {
   
   while (currentParticipants.length > 1) {
     const pairs = createPairsForRound(currentParticipants, roundIndex);
-    
-    console.log(`[buildTournamentRounds] Round ${roundIndex}:`, {
-      participantsCount: currentParticipants.length,
-      pairsCount: pairs.length,
-      pairs: pairs.map(p => ({
-        id: p.id,
-        participants: p.participants.map(pp => pp.anime.title),
-        status: p.status,
-      })),
-    });
     
     rounds.push({
       index: roundIndex,
@@ -150,11 +131,6 @@ function buildTournamentRounds(animeList: AnimeListItem[]): Round[] {
     roundIndex++;
   }
   
-  console.log('[buildTournamentRounds] Final structure:', rounds.map(r => ({
-    index: r.index,
-    pairsCount: r.pairs.length
-  })));
-  
   return rounds;
 }
 
@@ -163,12 +139,7 @@ export function useTournament() {
   const [currentPairIndex, setCurrentPairIndex] = useState(0);
   
   const initializeTournament = useCallback((animeList: AnimeListItem[]) => {
-    console.log('[useTournament] initializeTournament called with', animeList.length, 'anime');
-    
-    if (animeList.length < 2) {
-      console.warn('[useTournament] Need at least 2 participants');
-      return;
-    }
+    if (animeList.length < 2) return;
     
     const rounds = buildTournamentRounds(animeList);
     
@@ -192,34 +163,13 @@ export function useTournament() {
       roundStarted: false,
     };
     
-    console.log('[useTournament] Created tournament:', {
-      participantsCount: allParticipants.length,
-      roundsCount: rounds.length,
-      rounds: rounds.map(r => ({
-        index: r.index,
-        pairsCount: r.pairs.length,
-        pairs: r.pairs.map(p => ({
-          id: p.id,
-          participants: p.participants.map(pp => pp.anime.title),
-          status: p.status,
-        })),
-      })),
-    });
-    
     setTournament(newTournament);
     setCurrentPairIndex(0);
   }, []);
   
   const startRound = useCallback(() => {
-    console.log('[useTournament] startRound called');
-    
     setTournament(prev => {
-      if (!prev) {
-        console.log('[useTournament] startRound: no tournament yet');
-        return prev;
-      }
-      
-      console.log('[useTournament] startRound: updating tournament state');
+      if (!prev) return prev;
       
       // Mark pairs with two participants as 'playing'
       const updatedPairs = prev.rounds[prev.currentRoundIndex].pairs.map(pair => {
@@ -242,111 +192,50 @@ export function useTournament() {
   }, []);
   
   const selectWinner = useCallback((pairId: string, winnerId: string) => {
-    console.log('[useTournament] selectWinner:', { pairId, winnerId });
-    
     setTournament(prev => {
-      if (!prev) {
-        console.warn('[useTournament] selectWinner: no tournament');
-        return prev;
-      }
-      
+      if (!prev) return prev;
+
       const currentRound = prev.rounds[prev.currentRoundIndex];
       const pairIndex = currentRound.pairs.findIndex(p => p.id === pairId);
-      
-      if (pairIndex === -1) {
-        console.warn('[useTournament] Pair not found:', pairId);
-        return prev;
-      }
-      
+      if (pairIndex === -1) return prev;
+
       const pair = currentRound.pairs[pairIndex];
-      console.log('[useTournament] Found pair:', {
-        id: pair.id,
-        participants: pair.participants.map(p => p.anime.title),
-        status: pair.status,
-      });
-      
-      // Find winner participant
       const winner = pair.participants.find(p => p.id === winnerId);
-      if (!winner) {
-        console.warn('[useTournament] Winner not found in pair participants');
-        return prev;
-      }
-      
-      // Update the pair with winner
+      if (!winner) return prev;
+
       const updatedPair = { ...pair, winner, status: 'completed' as const };
-      
-      // Create updated pairs array
       const updatedPairs = [...currentRound.pairs];
       updatedPairs[pairIndex] = updatedPair;
-      
-      // Check if round is complete
-      const allPairsDecided = updatedPairs.every(p => 
+
+      const allPairsDecided = updatedPairs.every(p =>
         p.status === 'completed' || p.status === 'bye'
       );
-      
-      console.log('[useTournament] After selecting winner:', {
-        pairId,
-        winner: winner.anime.title,
-        allPairsDecided,
-        pairs: updatedPairs.map(p => ({
-          id: p.id,
-          status: p.status,
-          winner: p.winner?.anime?.title || null,
-        })),
-      });
-      
-      // If round is complete, create next round with winners
+
       let nextRoundIndex = prev.currentRoundIndex;
       let updatedRounds = [...prev.rounds];
       let isComplete = false;
       let champion = prev.champion;
-      
-      // Always update the current round's pairs
+
       updatedRounds[prev.currentRoundIndex] = {
         ...updatedRounds[prev.currentRoundIndex],
         pairs: updatedPairs,
       };
-      
+
       if (allPairsDecided) {
-        console.log('[useTournament] Round complete, processing winners');
-        
-        // Mark current round as complete
         updatedRounds[prev.currentRoundIndex].isComplete = true;
-        
-        // Collect winners for next round
+
         const winners = updatedPairs.map(p => {
-          if (p.status === 'bye') {
-            return p.participants[0];
-          }
-          if (!p.winner) {
-            console.warn('[useTournament] Pair has no winner despite allPairsDecided:', p.id);
-            return null;
-          }
+          if (p.status === 'bye') return p.participants[0];
           return p.winner;
         }).filter((w): w is TournamentParticipant => w !== null);
-        
-        console.log('[useTournament] Winners for next round:', winners.map(w => w.anime.title));
-        
+
         if (winners.length === 1) {
-          // Tournament complete!
-          console.log('[useTournament] Tournament complete! Champion:', winners[0].anime.title);
           isComplete = true;
           champion = winners[0];
         } else {
-          // Create next round
           const nextRoundPairs = createPairsForRound(winners, prev.currentRoundIndex + 1);
           nextRoundIndex = prev.currentRoundIndex + 1;
-          
-          console.log('[useTournament] Creating next round:', {
-            roundIndex: nextRoundIndex,
-            pairsCount: nextRoundPairs.length,
-            pairs: nextRoundPairs.map(p => ({
-              participants: p.participants.map(pp => pp.anime.title),
-              status: p.status,
-            })),
-          });
-          
-          // Ensure we have enough rounds array slots
+
           while (updatedRounds.length <= nextRoundIndex) {
             updatedRounds.push({
               index: updatedRounds.length,
@@ -354,7 +243,7 @@ export function useTournament() {
               isComplete: false,
             });
           }
-          
+
           updatedRounds[nextRoundIndex] = {
             index: nextRoundIndex,
             pairs: nextRoundPairs,
@@ -362,8 +251,8 @@ export function useTournament() {
           };
         }
       }
-      
-      const result: TournamentState = {
+
+      return {
         ...prev,
         rounds: updatedRounds,
         currentRoundIndex: nextRoundIndex,
@@ -371,34 +260,8 @@ export function useTournament() {
         champion,
         roundStarted: !allPairsDecided,
       };
-      
-      console.log('[useTournament] New state:', {
-        currentRoundIndex: result.currentRoundIndex,
-        isComplete: result.isComplete,
-        roundStarted: result.roundStarted,
-        champion: result.champion?.anime?.title || null,
-        rounds: result.rounds.map(r => ({
-          index: r.index,
-          pairsCount: r.pairs.length,
-          isComplete: r.isComplete,
-        })),
-      });
-      
-      return result;
     });
-    
-    // Move to next pair if available
-    setCurrentPairIndex(prev => {
-      if (!tournament) return prev;
-      const currentRound = tournament.rounds[tournament.currentRoundIndex];
-      const pendingPairs = currentRound.pairs.filter(
-        p => p.status === 'playing' && !p.winner
-      );
-      const currentIdx = pendingPairs.findIndex(p => p.id === pairId);
-      const nextIdx = currentIdx + 1;
-      return nextIdx < pendingPairs.length ? nextIdx : prev;
-    });
-  }, [tournament, currentPairIndex]);
+  }, []);
   
   const getNextAvailablePair = useCallback(() => {
     if (!tournament || !tournament.roundStarted) return null;

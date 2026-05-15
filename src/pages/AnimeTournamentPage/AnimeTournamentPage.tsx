@@ -63,29 +63,16 @@ export function AnimeTournamentPage() {
   useEffect(() => {
     if (!tournament || !tournament.roundStarted) return;
     
-    // Build queue of all pairs in this round that need to be played
     const currentRound = tournament.rounds[tournament.currentRoundIndex];
-    console.log('[AnimeTournamentPage] useEffect handleStartRound:', {
-      currentRoundIndex: tournament.currentRoundIndex,
-      pairsCount: currentRound.pairs.length,
-      pairs: currentRound.pairs.map(p => ({
-        id: p.id,
-        participants: p.participants.map(pp => pp.anime.title),
-        status: p.status,
-        winner: p.winner?.anime?.title || null,
-      })),
-    });
-    
     const playablePairs = currentRound.pairs.filter(
       p => p.status === 'playing' && !p.winner && p.participants.length === 2
     );
-    console.log('[AnimeTournamentPage] playablePairs:', playablePairs.length, playablePairs.map(p => p.id));
     
     if (playablePairs.length > 0) {
-      setPairQueue(playablePairs.slice(1)); // All except first
-      setActivePair(playablePairs[0]); // Open first immediately
+      setPairQueue(playablePairs.slice(1));
+      setActivePair(playablePairs[0]);
     }
-  }, [tournament?.roundStarted, tournament?.currentRoundIndex]);
+  }, [tournament, tournament?.roundStarted, tournament?.currentRoundIndex]);
   
   // Show loading
   if (isLoading) {
