@@ -30,13 +30,15 @@ export function TournamentMatch({
   const [showResult, setShowResult] = useState(false);
   
   const getRoundName = (round: number, total: number) => {
+    // round is 1-based (1 = first round, total = final)
+    // displayRound should be 1 for first round, total for final
     if (round === total) return 'Финал';
     if (total === 2 && round === 1) return 'Полуфинал';
     if (total === 3 && round === 1) return 'Четвертьфинал';
     if (total === 3 && round === 2) return 'Полуфинал';
     if (round === total - 1) return 'Полуфинал';
     if (round === total - 2) return 'Четвертьфинал';
-    return `${round}/${Math.pow(2, round)} финала`;
+    return `${round} раунд`;
   };
   
   const roundName = getRoundName(roundNumber, totalRounds);

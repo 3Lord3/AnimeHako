@@ -159,7 +159,8 @@ export function AnimeTournamentPage() {
   
   // Show bracket with start round button
   const getRoundName = (roundIndex: number, total: number) => {
-    const displayRound = total - roundIndex;
+    // roundIndex is 0-based, convert to 1-based for display
+    const displayRound = roundIndex + 1;
     if (displayRound === total) return 'Финал';
     if (total === 2 && displayRound === 1) return 'Полуфинал';
     if (total === 3 && displayRound === 1) return 'Четвертьфинал';

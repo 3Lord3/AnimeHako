@@ -27,7 +27,9 @@ export function TournamentBracket({ rounds, currentRoundIndex, roundStarted }: T
   });
   
   const getRoundName = (roundIndex: number, totalRounds: number) => {
-    const displayRound = totalRounds - roundIndex;
+    // roundIndex starts from 0 (first round) to totalRounds-1 (final)
+    // Display round number should be 1-based from first round to final
+    const displayRound = roundIndex + 1;
     if (displayRound === totalRounds) return 'Финал';
     if (totalRounds === 2 && displayRound === 1) return 'Полуфинал';
     if (totalRounds === 3 && displayRound === 1) return 'Четвертьфинал';
