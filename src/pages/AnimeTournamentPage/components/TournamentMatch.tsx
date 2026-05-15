@@ -2,11 +2,17 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Swords, ArrowLeft } from 'lucide-react';
 import { TournamentCard } from './TournamentCard';
-import type { TournamentMatch as TournamentMatchType, TournamentParticipant } from '@/hooks/useTournament';
+import type { TournamentParticipant } from '@/hooks/useTournament';
 import { cn } from '@/lib/utils';
 
 interface TournamentMatchProps {
-  match: TournamentMatchType;
+  match: {
+    id: string;
+    participant1: TournamentParticipant | null;
+    participant2: TournamentParticipant | null;
+    winner: TournamentParticipant | null;
+    status?: 'pending' | 'bye' | 'playing' | 'completed';
+  };
   roundNumber: number;
   totalRounds: number;
   onSelectWinner: (matchId: string, winnerId: string) => void;
@@ -51,7 +57,7 @@ export function TournamentMatch({
   }, [match.id]);
   
   const handleSelect = (participant: TournamentParticipant) => {
-    if (!isActive || match.winner || isSelecting || !participant) return;
+    if (!isActive || match.winner || isSelecting) return;
     
     setIsSelecting(true);
     setSelectedId(participant.id);
