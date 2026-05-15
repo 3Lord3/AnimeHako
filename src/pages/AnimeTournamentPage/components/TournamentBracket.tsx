@@ -9,23 +9,6 @@ interface TournamentBracketProps {
 }
 
 export function TournamentBracket({ rounds, currentRoundIndex, roundStarted }: TournamentBracketProps) {
-  console.log('[TournamentBracket] Render:', {
-    currentRoundIndex,
-    roundsCount: rounds.length,
-    roundStarted,
-    rounds: rounds.map(r => ({
-      index: r.index,
-      pairsCount: r.pairs.length,
-      isComplete: r.isComplete,
-      pairs: r.pairs.map(p => ({
-        id: p.id,
-        participants: p.participants.map(pp => pp.anime.title),
-        winner: p.winner?.anime?.title || null,
-        status: p.status,
-      })),
-    })),
-  });
-  
   const getRoundName = (roundIndex: number, totalRounds: number) => {
     // roundIndex starts from 0 (first round) to totalRounds-1 (final)
     // Display round number should be 1-based from first round to final
