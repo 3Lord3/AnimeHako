@@ -87,9 +87,8 @@ export function TournamentBracket({ rounds, currentRoundIndex, roundStarted }: T
               key={round.index} 
               className="flex flex-col"
               style={{
-                gap: `${getMatchSpacing(roundIdx)}px`,
+                gap: round.pairs.length <= 2 ? `${getMatchSpacing(roundIdx) / 2}px` : `${getMatchSpacing(roundIdx)}px`,
                 justifyContent: 'space-around',
-                minHeight: roundIdx === 0 ? '300px' : `${Math.pow(2, roundIdx) * 160}px`,
               }}
             >
               {round.pairs.map((pair) => {
