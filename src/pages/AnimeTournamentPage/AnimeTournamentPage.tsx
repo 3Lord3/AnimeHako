@@ -164,7 +164,7 @@ export function AnimeTournamentPage() {
   const pendingPairs = allRoundPairs.filter(p => p.status === 'playing' && !p.winner && p.participants.length === 2).length;
   
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+    <div className="container mx-auto py-4 sm:py-8">
       {/* Header */}
       <div className="text-center mb-6 sm:mb-8">
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 flex items-center justify-center gap-2 text-foreground">
@@ -174,7 +174,9 @@ export function AnimeTournamentPage() {
         <div className="flex items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
           <span className="flex items-center gap-1">
             <Target className="w-3 h-3 sm:w-4 sm:h-4" />
-            {getRoundName(tournament?.currentRoundIndex || 0, tournament?.rounds.length || 1)}
+            <span className="font-semibold">
+              {getRoundName(tournament?.currentRoundIndex || 0, tournament?.rounds.length || 1)}
+            </span>
           </span>
           <span>•</span>
           <span>{completedAnime.length} участников</span>
