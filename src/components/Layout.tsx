@@ -47,6 +47,14 @@ export function Layout() {
             >
               AniMatch
             </Link>
+            <Link
+              to="/tournament"
+              className={`hover:text-primary transition-colors ${
+                location.pathname === '/tournament' ? 'text-primary font-medium' : ''
+              }`}
+            >
+              AniTour
+            </Link>
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger>

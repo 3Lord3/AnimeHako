@@ -50,29 +50,24 @@
 }
 
 @layer base {
-  html {
+  html,
+  body {
+    height: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 0;
     overflow-x: hidden;
     overscroll-behavior: none;
   }
-  
+
   * {
     border-color: oklch(var(--color-border));
   }
-  
-  body {
-    background-color: oklch(var(--color-background));
-    color: oklch(var(--color-foreground));
-    overscroll-behavior: none;
-  }
-  
+
   /* Use border color for ring elements too */
   [class*="ring-foreground"] {
     --tw-ring-color: oklch(var(--color-border));
-  }
-  
-  body {
-    background-color: oklch(var(--color-background));
-    color: oklch(var(--color-foreground));
   }
 
   /* Disable text selection */
@@ -80,18 +75,18 @@
     user-select: none;
     -webkit-user-select: none;
   }
-  
+
   /* Allow input fields to be selectable */
   input, textarea {
     user-select: text;
     -webkit-user-select: text;
   }
-  
+
   /* Cursor pointer for interactive elements */
   button, [role="button"], a, [role="tab"], [data-slot="dropdown-menu-item"] {
     cursor: pointer;
   }
-  
+
   /* FOUC prevention - use values from inline script, fallback to shadcn variables */
   body {
     background-color: var(--fouc-bg, oklch(var(--color-background))) !important;

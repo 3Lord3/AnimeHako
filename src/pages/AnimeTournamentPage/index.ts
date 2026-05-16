@@ -1,0 +1,1 @@
+export { AnimeTournamentPage } from './AnimeTournamentPage';
