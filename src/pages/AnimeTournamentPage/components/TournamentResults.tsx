@@ -1,7 +1,9 @@
 import { RotateCcw } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import type { TournamentParticipant } from '@/hooks/useTournament';
 import { cn } from '@/lib/utils';
+import { getImageUrl } from '@/lib/imageUrl';
 
 interface TournamentResultsProps {
   participants: Array<TournamentParticipant & { position: number }>;
@@ -23,12 +25,12 @@ export function TournamentResults({ participants, champion, onRestart }: Tournam
               <div className="absolute inset-2 sm:inset-3 md:inset-4 bg-background rounded-full" />
               <div className="absolute inset-3 sm:inset-4 md:inset-6 overflow-hidden rounded-full">
                 <img
-                  src={champion.anime.poster || ''}
+                  src={champion.anime.poster ? getImageUrl(champion.anime.poster) : ''}
                   alt={champion.anime.title}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="absolute -top-1 sm:-top-2 left-1/2 -translate-x-1/2 bg-yellow-500 text-black px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs md:text-sm font-bold">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-yellow-500 text-black px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs md:text-sm font-bold whitespace-nowrap">
                 🏆 Чемпион
               </div>
             </div>
@@ -104,12 +106,17 @@ export function TournamentResults({ participants, champion, onRestart }: Tournam
         </div>
       </div>
       
-      {/* Restart button */}
-      <div className="text-center">
-        <Button onClick={onRestart} size="lg" variant="outline" className="gap-2 text-foreground border-2 hover:bg-accent text-sm sm:text-base px-4 py-3 sm:px-8 sm:py-6">
-          <RotateCcw className="w-4 h-4 sm:w-4 sm:h-4" />
+      {/* Action buttons */}
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+        <Button onClick={onRestart} size="lg" variant="outline" className="gap-2 text-foreground border-2 hover:bg-accent text-sm sm:text-base px-4 py-3 sm:px-8 sm:py-6 w-full sm:w-auto">
+          <RotateCcw className="w-4 h-4" />
           Провести ещё один турнир
         </Button>
+        <Link to="/" className="w-full sm:w-auto">
+          <Button size="lg" variant="outline" className="gap-2 text-foreground border-2 hover:bg-accent text-sm sm:text-base px-4 py-3 sm:px-8 sm:py-6 w-full">
+            На главную
+          </Button>
+        </Link>
       </div>
     </div>
   );
