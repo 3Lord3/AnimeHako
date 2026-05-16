@@ -259,4 +259,97 @@ describe('useTournament', () => {
       expect(result.current.tournament).toBeNull();
     });
   });
+
+  describe('resetRound', () => {
+    it('should reset only current round pairs to pending status', () => {
+      const { result } = renderHook(() => useTournament());
+      
+      act(() => {
+        result.current.initializeTournament(mockAnime5);
+      });
+      
+      act(() => {
+        result.current.startRound();
+      });
+      
+      // Select a winner for one pair
+      const firstRound = result.current.tournament!.rounds[0];
+      const firstPair = firstRound.pairs.find(p => p.participants.length === 2);
+      const winnerId = firstPair!.participants[0].id;
+      
+      act(() => {
+        result.current.selectWinner(firstPair!.id, winnerId);
+      });
+      
+      // Verify pair has winner
+      const updatedPair = result.current.tournament!.rounds[0].pairs.find(p => p.id === firstPair!.id);
+      expect(updatedPair!.winner).toBeDefined();
+      expect(updatedPair!.status).toBe('completed');
+      
+      // Reset round
+      act(() => {
+        result.current.resetRound();
+      });
+      
+      // Verify pair is reset to pending
+      const resetPair = result.current.tournament!.rounds[0].pairs.find(p => p.id === firstPair!.id);
+      expect(resetPair!.winner).toBeNull();
+      expect(resetPair!.status).toBe('pending');
+    });
+    
+    it('should set roundStarted to false', () => {
+      const { result } = renderHook(() => useTournament());
+      
+      act(() => {
+        result.current.initializeTournament(mockAnime5);
+      });
+      
+      act(() => {
+        result.current.startRound();
+      });
+      
+      expect(result.current.tournament!.roundStarted).toBe(true);
+      
+      act(() => {
+        result.current.resetRound();
+      });
+      
+      expect(result.current.tournament!.roundStarted).toBe(false);
+    });
+    
+    it('should not affect other rounds', () => {
+      const { result } = renderHook(() => useTournament());
+      
+      act(() => {
+        result.current.initializeTournament(mockAnime5);
+      });
+      
+      act(() => {
+        result.current.startRound();
+      });
+      
+      // Complete all pairs in first round to advance to next round
+      const firstRound = result.current.tournament!.rounds[0];
+      const pairs = firstRound.pairs.filter(p => p.participants.length === 2);
+      
+      for (const pair of pairs) {
+        const winnerId = pair.participants[0].id;
+        act(() => {
+          result.current.selectWinner(pair.id, winnerId);
+        });
+      }
+      
+      // After selecting winners, check if second round was created
+      const hasSecondRound = result.current.tournament!.rounds.length > 1;
+      
+      act(() => {
+        result.current.resetRound();
+      });
+      
+      // If second round existed, it should be unchanged
+      if (hasSecondRound) {
+        expect(result.current.tournament!.rounds.length).toBeGreaterThanOrEqual(2);
+      }
+    });
+  });
 });

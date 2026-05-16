@@ -22,6 +22,7 @@ export function AnimeTournamentPage() {
     selectWinner, 
     getResults, 
     resetTournament,
+    resetRound,
   } = useTournament();
   
   const completedAnime = completedList?.map(item => item.anime) || [];
@@ -129,6 +130,13 @@ export function AnimeTournamentPage() {
       nextMatchId: null,
     };
     
+    const handleBackToBracket = () => {
+      // Reset current round selections and return to bracket view
+      resetRound();
+      setActivePair(null);
+      setPairQueue([]);
+    };
+    
     return (
       <div className="fixed inset-0 z-50 bg-background">
         <TournamentMatch
@@ -137,6 +145,7 @@ export function AnimeTournamentPage() {
           totalRounds={totalRounds}
           onSelectWinner={handleSelectWinner}
           onBack={undefined}
+          onBackToBracket={handleBackToBracket}
           isActive={true}
           matchIndex={currentPairIdx}
           totalMatchesInRound={totalInRound}
@@ -157,11 +166,6 @@ export function AnimeTournamentPage() {
     if (displayRound === total - 2) return 'Четвертьфинал';
     return `${displayRound} раунд`;
   };
-  
-  const currentRound = tournament?.rounds[tournament.currentRoundIndex];
-  const allRoundPairs = currentRound?.pairs || [];
-  const completedPairs = allRoundPairs.filter(p => p.status === 'completed' || p.status === 'bye').length;
-  const pendingPairs = allRoundPairs.filter(p => p.status === 'playing' && !p.winner && p.participants.length === 2).length;
   
   return (
     <div className="container mx-auto py-4 sm:py-8">
@@ -203,25 +207,6 @@ export function AnimeTournamentPage() {
                 <Play className="w-4 h-4 sm:w-5 sm:h-5" />
                 Начать {getRoundName(tournament.currentRoundIndex, tournament.rounds.length).toLowerCase()}
               </Button>
-            </div>
-          )}
-          
-          {/* Round progress */}
-          {tournament.roundStarted && allRoundPairs.length > 0 && (
-            <div className="text-center mt-4 sm:mt-4">
-              <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-muted">
-                <span className="text-xs sm:text-sm">
-                  {completedPairs}/{allRoundPairs.length} пар определено
-                </span>
-                {pendingPairs > 0 && (
-                  <>
-                    <span className="text-muted-foreground">•</span>
-                    <span className="text-xs sm:text-sm font-medium text-primary">
-                      {pendingPairs} в процессе
-                    </span>
-                  </>
-                )}
-              </div>
             </div>
           )}
         </>

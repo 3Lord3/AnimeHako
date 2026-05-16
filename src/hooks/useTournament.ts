@@ -292,6 +292,33 @@ export function useTournament() {
     }));
   }, [tournament]);
   
+  const resetRound = useCallback(() => {
+    setTournament(prev => {
+      if (!prev) return prev;
+
+      // Reset all pairs in the current round to 'pending' status with no winners
+      const updatedRounds = prev.rounds.map((round, idx) => {
+        if (idx === prev.currentRoundIndex) {
+          return {
+            ...round,
+            pairs: round.pairs.map(pair => ({
+              ...pair,
+              winner: null,
+              status: pair.participants.length === 2 ? 'pending' : pair.status,
+            })),
+          };
+        }
+        return round;
+      });
+
+      return {
+        ...prev,
+        rounds: updatedRounds,
+        roundStarted: false,
+      };
+    });
+  }, []);
+
   const resetTournament = useCallback(() => {
     setTournament(null);
     setCurrentPairIndex(0);
@@ -306,5 +333,6 @@ export function useTournament() {
     getNextAvailablePair,
     getResults,
     resetTournament,
+    resetRound,
   };
 }

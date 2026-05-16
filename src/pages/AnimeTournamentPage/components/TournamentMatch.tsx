@@ -1,8 +1,18 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Trophy, Swords, ArrowLeft } from 'lucide-react';
+import { Trophy, Swords, ArrowLeft, Sun, Moon, Monitor, AlertTriangle } from 'lucide-react';
 import { TournamentCard } from './TournamentCard';
 import type { TournamentParticipant } from '@/hooks/useTournament';
+import { useTheme } from '@/hooks';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 interface TournamentMatchProps {
   match: {
@@ -16,6 +26,7 @@ interface TournamentMatchProps {
   totalRounds: number;
   onSelectWinner: (matchId: string, winnerId: string) => void;
   onBack?: () => void;
+  onBackToBracket?: () => void;
   isActive: boolean;
   matchIndex: number;
   totalMatchesInRound: number;
@@ -27,6 +38,7 @@ export function TournamentMatch({
   totalRounds,
   onSelectWinner,
   onBack,
+  onBackToBracket,
   isActive,
   matchIndex,
   totalMatchesInRound,
@@ -34,6 +46,12 @@ export function TournamentMatch({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
+  const [showBackDialog, setShowBackDialog] = useState(false);
+  const { theme, setTheme } = useTheme();
+  
+  const themes = ['light', 'dark', 'system'] as const;
+  const themeIcons = { light: Sun, dark: Moon, system: Monitor };
+  const ThemeIcon = themeIcons[theme];
   
   const getRoundName = (round: number, total: number) => {
     // round is 1-based (1 = first round, total = final)
@@ -98,7 +116,28 @@ export function TournamentMatch({
             ({matchIndex + 1}/{totalMatchesInRound})
           </span>
         </div>
-        <div className="w-12 sm:w-20" />
+        <div className="flex items-center gap-2">
+          {onBackToBracket && (
+            <button
+              onClick={() => setShowBackDialog(true)}
+              className="flex items-center gap-1 sm:gap-2 text-muted-foreground hover:text-foreground transition-colors text-xs sm:text-sm"
+              title="Вернуться к турнирной сетке (изменения не сохранятся)"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Назад</span>
+            </button>
+          )}
+          <button
+            onClick={() => {
+              const nextIndex = (themes.indexOf(theme) + 1) % themes.length;
+              setTheme(themes[nextIndex]);
+            }}
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+            title={`Тема: ${theme === 'light' ? 'Светлая' : theme === 'dark' ? 'Тёмная' : 'Системная'}`}
+          >
+            <ThemeIcon className="w-4 h-4 text-foreground" />
+          </button>
+        </div>
       </div>
       
       {/* Match container - cards take full available space */}
@@ -170,6 +209,31 @@ export function TournamentMatch({
         </div>
       </div>
       
+      {/* Back confirmation dialog */}
+      <Dialog open={showBackDialog} onOpenChange={setShowBackDialog}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-yellow-500" />
+              Вернуться к сетке?
+            </DialogTitle>
+            <DialogDescription>
+              Прогресс текущего раунда будет сброшен. Все сделанные выборы будут отменены.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBackDialog(false)}>
+              Отмена
+            </Button>
+            <Button onClick={() => {
+              setShowBackDialog(false);
+              onBackToBracket?.();
+            }}>
+              Вернуться
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
     </div>
   );
